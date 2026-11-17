@@ -133,18 +133,28 @@ button,input,select,textarea{font:inherit;color:inherit}
 }
 .chip.on{background:var(--pr);color:#fff;border-color:var(--pr);box-shadow:0 4px 12px rgba(24,60,40,0.22)}
 
-/* Promo Banner */
+/* Promo Banner & Slideshow */
 .promo-wrap{padding:0 20px 18px}
 .promo-card{
   position:relative;overflow:hidden;border-radius:26px;padding:22px;
-  background:linear-gradient(135deg,#DDE8CE 0%,#C9DCBA 100%);
+  background:linear-gradient(135deg,#DDE8CE 0%,#C9DCBA 100%) center/cover no-repeat;
   display:flex;align-items:center;justify-content:space-between;gap:14px;
-  box-shadow:var(--sh);
+  box-shadow:var(--sh);transition:background-position .35s ease;
 }
 .promo-card::after{
   content:"";position:absolute;right:-30px;bottom:-30px;width:150px;height:150px;
   border-radius:50%;background:rgba(24,60,40,0.07);pointer-events:none;
 }
+.promo-card.has-bg::before{
+  content:"";position:absolute;inset:0;z-index:0;
+  background:linear-gradient(95deg,rgba(14,34,23,0.88) 0%,rgba(20,46,31,0.72) 60%,rgba(20,46,31,0.38) 100%);
+}
+.promo-card.has-bg::after{display:none}
+.promo-card.has-bg .promo-pill{background:rgba(183,224,138,0.22);color:var(--ac);backdrop-filter:blur(6px)}
+.promo-card.has-bg .promo-copy h2{color:#fff}
+.promo-card.has-bg .promo-copy p{color:rgba(255,255,255,0.85)}
+.promo-card.has-bg .promo-btn{background:var(--ac);color:var(--pr)}
+.promo-card.has-bg .promo-art{display:none}
 .promo-copy{flex:1;min-width:0;position:relative;z-index:1}
 .promo-pill{
   display:inline-block;background:rgba(24,60,40,0.12);color:var(--pr);
@@ -160,9 +170,37 @@ button,input,select,textarea{font:inherit;color:inherit}
 .promo-art{
   width:84px;height:84px;border-radius:22px;background:rgba(255,255,255,0.65);
   display:grid;place-items:center;flex:none;position:relative;z-index:1;
-  box-shadow:0 8px 20px rgba(24,60,40,0.1);
+  box-shadow:0 8px 20px rgba(24,60,40,0.1);overflow:hidden;
 }
 .promo-art svg{width:56px;height:56px}
+.promo-dots{position:absolute;bottom:10px;right:16px;z-index:2;display:flex;gap:5px}
+.promo-dot{width:7px;height:7px;border-radius:99px;border:0;padding:0;background:rgba(255,255,255,0.42);cursor:pointer;transition:all .2s}
+.promo-dot.on{width:18px;background:var(--ac)}
+.promo-nav{position:absolute;top:12px;right:14px;z-index:2;display:flex;gap:6px}
+.promo-nav button{
+  width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,0.34);
+  color:#fff;display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(4px);
+}
+.slide-slots{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+.slide-slot{
+  aspect-ratio:4/3;border-radius:14px;border:2px solid var(--bd);background:var(--sf-alt) center/cover no-repeat;
+  display:grid;place-items:center;cursor:pointer;position:relative;overflow:hidden;font-size:11px;font-weight:700;color:var(--mu);
+}
+.slide-slot.on{border-color:var(--pr);box-shadow:0 0 0 2px rgba(24,60,40,0.18)}
+.slide-slot span{position:absolute;top:4px;left:4px;background:rgba(20,40,29,0.75);color:#fff;font-size:9px;padding:1px 6px;border-radius:99px}
+.pos-preview{
+  width:100%;height:124px;border-radius:18px;border:1.5px solid var(--bd);
+  background:var(--sf-alt) center/cover no-repeat;position:relative;overflow:hidden;margin-bottom:10px;
+}
+.pos-presets{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.pos-presets button{
+  border:1px solid var(--bd);background:var(--sf);color:var(--tx);
+  border-radius:99px;padding:5px 12px;font-size:11.5px;font-weight:700;cursor:pointer;
+}
+.pos-presets button.on{background:var(--pr);color:#fff;border-color:var(--pr)}
+.range-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.range-box{background:var(--bg);padding:8px 12px;border-radius:14px;border:1px solid var(--bd)}
+.range-box input[type=range]{width:100%;accent-color:var(--pr);margin-top:4px}
 
 /* Section Header & 2-Col Grid */
 .sec-head{display:flex;align-items:center;justify-content:space-between;padding:0 20px 12px}
@@ -267,200 +305,243 @@ button,input,select,textarea{font:inherit;color:inherit}
 .nav-center svg{width:22px;height:22px}
 .nav-center .badge-dot{top:-2px;right:-2px;background:var(--ac);color:var(--pr)}
 
-/* Modals / Sheets */
+/* Modals / Sheets (60% Viewport Pop-up) */
 dialog{
-  border:0;border-radius:28px 28px 0 0;padding:0;margin:auto auto 0;
-  width:100%;max-width:540px;max-height:92dvh;overflow-y:auto;
-  background:var(--sf);color:var(--tx);box-shadow:var(--sh-lg);
+  border:0;border-radius:26px;padding:0;margin:auto;
+  width:calc(100% - 32px);max-width:440px;max-height:60dvh;overflow-y:auto;
+  background:var(--sf);color:var(--tx);box-shadow:0 24px 48px rgba(15,32,22,0.28);
+  scrollbar-width:thin;scrollbar-color:rgba(24,60,40,0.2) transparent;
 }
-@media(min-width:560px){dialog{margin:auto;border-radius:28px;max-width:460px}}
-dialog::backdrop{background:rgba(15,32,22,0.52);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-.sheet-handle{width:38px;height:4px;border-radius:99px;background:rgba(24,60,40,0.18);margin:10px auto 0}
+dialog::-webkit-scrollbar{width:4px}
+dialog::-webkit-scrollbar-thumb{background:rgba(24,60,40,0.22);border-radius:99px}
+@media(min-width:720px){dialog{width:60%;max-width:460px;max-height:60dvh}}
+dialog::backdrop{background:rgba(15,32,22,0.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.sheet-handle{width:34px;height:4px;border-radius:99px;background:rgba(24,60,40,0.18);margin:8px auto 0}
 
-/* Product Detail Sheet */
-.pd-hero{
-  position:relative;background:linear-gradient(180deg,#E6EFE0 0%,#F3F7EE 100%);
-  padding:14px 20px 26px;text-align:center;
+/* Product Detail Pop-up (Portrait & Foto Lebih Luas Tanpa Scroll) */
+#pd{
+  overflow:hidden;display:none;flex-direction:column;
+  width:min(356px,calc(100% - 36px));max-width:356px;max-height:92dvh;
+  border-radius:28px;
 }
-.pd-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+#pd[open]{display:flex}
+#pdb{display:flex;flex-direction:column;overflow:hidden}
+.pd-hero{
+  position:relative;flex:none;height:218px;
+  background:linear-gradient(180deg,#E6EFE0 0%,#F3F7EE 100%) center/cover no-repeat;
+  padding:14px 14px 24px;text-align:center;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.pd-hero.has-img::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,rgba(14,34,23,0.36) 0%,rgba(14,34,23,0.02) 48%,rgba(14,34,23,0.28) 100%);
+}
+.pd-top{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center}
 .pd-circle{
-  width:40px;height:40px;border-radius:50%;border:1px solid var(--bd);
+  width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,0.45);
   background:rgba(255,255,255,0.92);color:var(--pr);
   display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;
-  box-shadow:0 3px 10px rgba(24,60,40,0.08);
+  box-shadow:0 4px 12px rgba(15,32,22,0.16);backdrop-filter:blur(6px);
 }
-.pd-circle svg{width:19px!important;height:19px!important;flex:none;display:block}
+.pd-circle svg{width:16px!important;height:16px!important;flex:none;display:block}
 .pd-art{
-  width:154px;height:154px;margin:0 auto;border-radius:28px;
-  background:center/cover no-repeat;display:grid;place-items:center;
+  width:110px;height:110px;margin:auto;border-radius:24px;
+  display:grid;place-items:center;
 }
-.pd-art svg{width:122px;height:122px}
-.pd-body{
-  background:var(--sf);border-radius:28px 28px 0 0;margin-top:-18px;
-  padding:22px 22px calc(24px + env(safe-area-inset-bottom,0px));position:relative;
+.pd-art svg{width:88px;height:88px}
+.pd-hero-meta{
+  position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;
 }
 .pd-brand{
-  display:inline-block;background:var(--sf-alt);color:var(--pr);
-  font-size:11px;font-weight:700;padding:4px 11px;border-radius:99px;margin-bottom:8px;
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(24,60,40,0.86);color:#fff;backdrop-filter:blur(6px);
+  font-size:10px;font-weight:700;padding:4px 10px;border-radius:99px;
 }
-.pd-title{font-size:22px;font-weight:800;color:var(--pr);margin-bottom:4px}
-.pd-rating{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mu);margin-bottom:10px}
+.pd-stock-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(255,255,255,0.92);color:var(--pr);backdrop-filter:blur(6px);
+  font-size:10px;font-weight:800;padding:4px 10px;border-radius:99px;
+}
+.pd-scroll{
+  flex:none;overflow:visible;background:var(--sf);border-radius:24px 24px 0 0;margin-top:-18px;
+  padding:14px 16px 8px;position:relative;z-index:2;
+}
+.pd-head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.pd-title{font-size:18.5px;font-weight:800;color:var(--pr);line-height:1.18;margin-bottom:2px}
+.pd-rating{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--mu)}
 .pd-rating b{color:var(--tx)}
-.pd-price{font-size:24px;font-weight:800;color:var(--pr);margin-bottom:10px}
-.pd-price small{font-size:13px;font-weight:500;color:var(--mu)}
-.pd-desc{font-size:13.5px;color:var(--mu);line-height:1.55;margin-bottom:18px}
+.pd-price-box{text-align:right;flex:none}
+.pd-price{font-size:17.5px;font-weight:800;color:var(--pr);line-height:1.15}
+.pd-price-unit{display:block;font-size:10.5px;font-weight:600;color:var(--mu)}
+.pd-desc-box{
+  background:var(--bg);border-left:3px solid var(--pr);
+  padding:8px 11px;border-radius:0 12px 12px 0;margin-bottom:10px;
+}
+.pd-desc{
+  margin:0;font-size:11.5px;color:#384D40;line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
 .pd-highlights{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
-  background:var(--bg);padding:12px 8px;border-radius:20px;margin-bottom:18px;text-align:center;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:10px;
 }
-.hl-item{display:flex;flex-direction:column;align-items:center;gap:5px}
+.hl-item{
+  display:flex;align-items:center;gap:7px;
+  background:var(--sf-alt);padding:6px 9px;border-radius:11px;
+}
 .hl-ico{
-  width:34px;height:34px;border-radius:50%;background:var(--sf);color:var(--pr);
-  display:grid;place-items:center;box-shadow:0 2px 8px rgba(24,60,40,0.06);
+  width:20px;height:20px;border-radius:50%;background:var(--sf);color:var(--pr);
+  display:grid;place-items:center;flex:none;
 }
-.hl-ico svg{width:16px;height:16px}
-.hl-item span{font-size:10px;font-weight:700;color:var(--tx);line-height:1.2}
-.size-label{font-size:12.5px;font-weight:700;color:var(--tx);margin-bottom:8px;display:block}
-.size-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.hl-ico svg{width:11px;height:11px}
+.hl-item span{font-size:10px;font-weight:700;color:var(--pr);line-height:1.1}
+.size-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.size-label{font-size:11.5px;font-weight:700;color:var(--tx);margin:0}
+.size-sub{font-size:10.5px;font-weight:600;color:var(--mu)}
+.size-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:2px}
 .sz-btn{
   border:1.5px solid var(--bd);background:var(--sf);color:var(--tx);
-  padding:10px 6px;border-radius:99px;font-size:12.5px;font-weight:700;cursor:pointer;text-align:center;
+  padding:7px 4px;border-radius:12px;font-size:11.5px;font-weight:700;cursor:pointer;text-align:center;
+  transition:all .14s;
 }
-.sz-btn.on{background:var(--pr);color:#fff;border-color:var(--pr)}
-
-/* Cart & Form Elements */
-.sheet-pad{padding:18px 22px calc(26px + env(safe-area-inset-bottom,0px))}
-.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.sheet-head h2{font-size:19px;font-weight:800;color:var(--pr);margin:0}
-.btn{
-  background:var(--pr);color:#fff;border:0;border-radius:99px;
-  padding:13px 20px;font-size:14px;font-weight:700;cursor:pointer;
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  transition:transform .14s,opacity .14s;min-height:46px;
+.sz-btn.on{background:var(--pr);color:#fff;border-color:var(--pr);box-shadow:0 3px 10px rgba(24,60,40,0.2)}
+.pd-foot{
+  flex:none;background:var(--sf);padding:8px 16px 14px;
 }
-.btn:active{transform:scale(0.97)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.full{width:100%}
-.btn.o{background:var(--sf);color:var(--pr);border:1.5px solid var(--bd)}
-.btn.d{background:#FEE2E2;color:var(--rd)}
-.btn.s{padding:8px 14px;font-size:12.5px;min-height:38px}
-.btn.wa{background:#1F8E4D;color:#fff}
 
-input:not([type=checkbox]):not([type=file]):not([type=date]),textarea{
-  width:100%;border:1.5px solid rgba(24,60,40,0.12);background:var(--bg);color:var(--tx);
-  border-radius:16px;padding:12px 15px;font-size:16px;outline:none;
-  transition:border-color .15s,background .15s;
-}
-input:not([type=checkbox]):not([type=file]):not([type=date]):focus,textarea:focus{border-color:var(--pr);background:var(--sf);box-shadow:0 0 0 3px rgba(24,60,40,0.08)}
-label{display:block;font-size:12px;font-weight:700;color:var(--pr);margin:12px 0 5px}
-
-/* Cart Items & Summary */
+/* Cart Sheet & Form Controls */
+.sheet-pad{padding:14px 20px 20px}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:nowrap}
+.sheet-head h3{font-size:17px;font-weight:800;color:var(--pr);margin:0}
 .cart-item{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:12px 0;border-bottom:1px solid var(--bd);
+  padding:10px 0;border-bottom:1px solid var(--bd);
 }
 .cart-summary{
-  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
-  padding:14px 0 4px;margin-top:4px;border-top:1.5px dashed var(--bd);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:12px;padding:10px 0 6px;border-top:1.5px dashed var(--bd);
 }
-.cart-summary span{font-size:13.5px;font-weight:600;color:var(--mu)}
-.cart-summary b{font-size:20px;font-weight:800;color:var(--pr)}
-.cart-actions{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-top:16px}
+.cart-summary span{font-size:13.5px;color:var(--mu);font-weight:600}
+.cart-summary b{font-size:18px;font-weight:800;color:var(--pr)}
+.sheet-actions{display:grid;grid-template-columns:1fr 1.8fr;gap:10px;margin-top:14px}
+.sheet-actions .btn{width:100%;padding:12px 14px}
 .qty-stepper{
-  display:inline-flex;align-items:center;background:var(--sf-alt);
-  border-radius:99px;padding:3px;gap:2px;
+  display:inline-flex;align-items:center;gap:6px;background:var(--sf-alt);
+  padding:4px;border-radius:99px;
 }
 .qty-stepper button{
-  width:30px;height:30px;border-radius:50%;border:0;background:var(--sf);
-  color:var(--pr);font-weight:800;font-size:15px;cursor:pointer;display:grid;place-items:center;
+  width:28px;height:28px;border-radius:50%;border:0;background:var(--sf);color:var(--pr);
+  font-weight:800;cursor:pointer;display:grid;place-items:center;box-shadow:0 2px 5px rgba(0,0,0,0.06);
 }
-.qty-stepper span{min-width:46px;text-align:center;font-size:12.5px;font-weight:700;color:var(--pr)}
+.qty-stepper span{font-size:12.5px;font-weight:700;min-width:44px;text-align:center}
 
-/* Admin & Tables */
-.card{background:var(--sf);border:1px solid var(--bd);border-radius:22px;padding:18px;box-shadow:var(--sh);margin-bottom:14px}
-.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.sp{flex:1}
-.mu{font-size:12.5px;color:var(--mu)}
-.tag{display:inline-block;background:var(--sf-alt);color:var(--pr);font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px}
+/* Buttons & Inputs */
+.btn{
+  border:0;border-radius:99px;padding:12px 20px;min-height:44px;
+  background:var(--pr);color:#fff;font-weight:700;font-size:14px;
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 12px rgba(24,60,40,0.18);transition:transform .15s,opacity .15s;
+}
+.btn:active{transform:scale(0.97)}
+.btn.o{background:var(--sf);color:var(--pr);border:1.5px solid var(--bd);box-shadow:none}
+.btn.d{background:#FEE2E2;color:var(--rd);box-shadow:none}
+.btn.wa{background:#1F8E4E;color:#fff}
+.btn.lime{background:var(--ac);color:var(--pr);box-shadow:0 6px 18px rgba(183,224,138,0.35)}
+.btn.ghost-light{background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.22);box-shadow:none}
+.btn.s{padding:8px 14px;min-height:36px;font-size:12.5px}
+.btn.full{width:100%}
+label{display:block;font-size:12.5px;font-weight:700;color:var(--tx);margin:12px 0 5px}
+input:not([type=checkbox]):not([type=file]),textarea{
+  width:100%;min-height:46px;border:1.5px solid rgba(24,60,40,0.12);border-radius:16px;
+  padding:11px 14px;background:var(--bg);font-size:16px;outline:none;transition:border-color .15s,background .15s;
+}
+input:not([type=checkbox]):not([type=file]):focus,textarea:focus{border-color:var(--pr);background:var(--sf)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.bar{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:520px){.bar{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:24px;padding:18px;box-shadow:var(--sh);margin-bottom:14px}
+.mu{color:var(--mu);font-size:12.5px}
+.h{display:none!important}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--sf-alt);color:var(--pr)}
 .tag.ok{background:#DCFCE7;color:#166534}
 .tag.warn{background:#FEF3C7;color:#92400E}
 .tag.err{background:#FEE2E2;color:#991B1B}
+
+/* Admin & Bookkeeping Modern UI */
+.login-screen{
+  min-height:100dvh;background:linear-gradient(160deg,#0E2418 0%,#183C28 55%,#1E4B32 100%);
+  color:#fff;display:flex;flex-direction:column;justify-content:center;padding:24px 20px;
+}
+.login-box{max-width:420px;margin:0 auto;width:100%}
+.login-brand{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.login-brand span{font-size:19px;font-weight:800;color:#fff}
+.login-title{font-size:32px;font-weight:800;line-height:1.15;color:#fff;margin-bottom:10px}
+.login-title em{font-style:normal;color:var(--ac)}
+.login-sub{font-size:14px;color:rgba(255,255,255,0.72);margin-bottom:26px}
+.login-card{
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);
+  border-radius:26px;padding:22px;backdrop-filter:blur(12px);
+}
+.login-card label{color:rgba(255,255,255,0.85);margin-top:0}
+.login-card input{background:rgba(255,255,255,0.95);color:var(--tx);border:0}
+
+/* Admin Tabs & KPI Cards */
 .tabs{
-  display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
-  background:var(--sf);padding:6px;border-radius:99px;border:1px solid var(--bd);
-  margin-bottom:18px;box-shadow:var(--sh);
+  display:flex;gap:6px;background:var(--sf);padding:5px;border-radius:99px;
+  border:1px solid var(--bd);box-shadow:var(--sh);margin-bottom:16px;
+  overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
 }
 .tabs::-webkit-scrollbar{display:none}
 .tb{
-  flex:1 0 auto;border:0;background:none;padding:10px 14px;border-radius:99px;
-  font-size:12.5px;font-weight:700;color:var(--mu);cursor:pointer;white-space:nowrap;text-align:center;
+  flex:1 0 auto;border:0;border-radius:99px;padding:10px 14px;background:transparent;
+  color:var(--mu);font-weight:700;font-size:12.5px;cursor:pointer;white-space:nowrap;
+  transition:all .15s;text-align:center;
 }
-.tb.on{background:var(--pr);color:#fff;box-shadow:0 4px 12px rgba(24,60,40,0.2)}
-.k{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-@media(max-width:560px){.k{grid-template-columns:1fr}}
-.k .card{margin:0;padding:16px}
-.k b{display:block;font-size:18px;margin-top:4px}
-.in{color:var(--ok)}.out{color:var(--rd)}
-.bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
-.bar>div{min-width:0}
-.sc{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-th,td{padding:11px 8px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:middle}
-th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mu)}
+.tb.on{background:var(--pr);color:#fff;box-shadow:0 4px 10px rgba(24,60,40,0.22)}
 
-/* Admin CMS & Pembukuan Kekinian */
-.login-screen{
-  min-height:100dvh;display:flex;flex-direction:column;justify-content:center;
-  padding:calc(48px + env(safe-area-inset-top,0px)) 24px 28px;
-  background:radial-gradient(120% 80% at 80% 0%,#28593D 0%,#102619 65%,#09170F 100%);
-  color:#fff;
-}
-.login-box{max-width:400px;width:100%;margin:0 auto}
-.login-brand{display:flex;align-items:center;gap:10px;margin-bottom:28px}
-.login-brand .brand-logo{background:var(--ac);color:var(--pr)}
-.login-brand span{font-size:22px;font-weight:800;letter-spacing:-0.02em}
-.login-title{font-size:30px;font-weight:800;line-height:1.15;color:#fff;margin-bottom:10px}
-.login-title em{font-style:normal;color:var(--ac)}
-.login-sub{font-size:13.5px;color:rgba(255,255,255,0.72);margin-bottom:28px;line-height:1.5}
-.login-card{
-  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);
-  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
-  border-radius:26px;padding:20px;
-}
-.login-card label{color:rgba(255,255,255,0.85);margin-top:0}
-.login-card input{background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.2);color:#fff}
-.login-card input::placeholder{color:rgba(255,255,255,0.45)}
-.btn.lime{background:var(--ac);color:var(--pr);font-weight:800}
-.btn.ghost-light{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,0.28)}
-
-.stat-pills{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-@media(max-width:480px){.stat-pills{grid-template-columns:1fr}}
+.stat-pills{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media(max-width:440px){.stat-pills{grid-template-columns:1fr}}
 .stat-pill{
   background:var(--sf);border:1px solid var(--bd);border-radius:20px;padding:14px;
-  box-shadow:var(--sh);display:flex;flex-direction:column;gap:4px;
+  box-shadow:var(--sh);display:flex;flex-direction:column;justify-content:space-between;
 }
-.stat-pill-top{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:700;color:var(--mu)}
+.stat-pill-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.stat-pill-top span{font-size:12px;color:var(--mu);font-weight:600}
 .stat-ico{width:28px;height:28px;border-radius:10px;background:var(--sf-alt);color:var(--pr);display:grid;place-items:center}
 .stat-ico svg{width:15px;height:15px}
-.stat-pill b{font-size:18px;font-weight:800;color:var(--pr)}
-.stat-pill small{font-size:11px;color:var(--mu)}
+.stat-pill b{font-size:18px;font-weight:800;color:var(--pr);line-height:1.15}
+.stat-pill small{font-size:11px;color:var(--mu);margin-top:2px}
 
-.cms-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-@media(max-width:560px){.cms-grid{grid-template-columns:1fr}}
+.kpi-hero{
+  background:linear-gradient(135deg,#183C28 0%,#24563B 100%);color:#fff;
+  border-radius:22px;padding:16px;box-shadow:0 10px 24px rgba(24,60,40,0.22);
+}
+.kpi-hero .stat-pill-top span{color:rgba(255,255,255,0.78)}
+.kpi-hero .stat-ico{background:rgba(255,255,255,0.14);color:var(--ac)}
+.kpi-hero b{color:var(--ac);font-size:20px;font-weight:800;display:block}
+.kpi-hero small{color:rgba(255,255,255,0.72);font-size:11px}
+
+.k{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+@media(max-width:520px){.k{grid-template-columns:1fr}}
+.in{color:var(--ok)!important}.out{color:var(--rd)!important}
+
+/* CMS Product Cards */
+.cms-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:640px){.cms-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .cms-card{
   background:var(--sf);border:1px solid var(--bd);border-radius:22px;padding:14px;
-  box-shadow:var(--sh);display:flex;flex-direction:column;gap:10px;
+  box-shadow:var(--sh);display:flex;flex-direction:column;gap:12px;
 }
-.cms-top{display:flex;gap:12px;align-items:center}
+.cms-top{display:flex;align-items:center;gap:12px}
 .cms-thumb{
   width:56px;height:56px;border-radius:16px;background:var(--sf-alt) center/cover no-repeat;
-  display:grid;place-items:center;flex:none;
+  display:grid;place-items:center;flex:none;overflow:hidden;
 }
-.cms-thumb svg{width:34px;height:34px}
+.cms-thumb svg{width:38px;height:38px}
 .cms-info{flex:1;min-width:0}
-.cms-info h3{font-size:15px;font-weight:800;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cms-price{font-size:13.5px;font-weight:700;color:var(--ok)}
+.cms-info h3{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cms-price{font-size:13.5px;font-weight:800;color:var(--pr);margin-top:2px}
 .cms-foot{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap;
   padding-top:10px;border-top:1px solid var(--bd);
 }
 .cms-actions{display:flex;align-items:center;gap:6px;flex:none}
@@ -471,135 +552,137 @@ th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mu)}
 .cms-del svg{width:15px;height:15px}
 .switch{position:relative;display:inline-block;width:42px;height:24px;flex:none}
 .switch input{opacity:0;width:0;height:0}
-.slider{position:absolute;cursor:pointer;inset:0;background:#D4DDD0;border-radius:99px;transition:.2s}
-.slider:before{content:"";position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 2px 4px rgba(0,0,0,0.15)}
+.slider{position:absolute;inset:0;background:#CBD5E1;border-radius:99px;cursor:pointer;transition:.2s}
+.slider:before{content:"";position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
 .switch input:checked + .slider{background:var(--pr)}
 .switch input:checked + .slider:before{transform:translateX(18px)}
 
-.kpi-hero{
-  background:linear-gradient(135deg,#183C28 0%,#26593C 100%);color:#fff;
-  border-radius:24px;padding:18px;box-shadow:var(--sh-lg);
+/* Order Cards & Bookkeeping Ledger */
+.ord-card{
+  background:var(--sf);border:1px solid var(--bd);border-radius:22px;padding:16px;
+  box-shadow:var(--sh);margin-bottom:12px;
 }
-.kpi-hero .stat-pill-top{color:rgba(255,255,255,0.75)}
-.kpi-hero .stat-ico{background:rgba(255,255,255,0.14);color:var(--ac)}
-.kpi-hero b{color:var(--ac);font-size:21px}
-.kpi-hero small{color:rgba(255,255,255,0.7)}
-
+.ord-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.ord-foot{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--bd);
+}
 .tx-list{display:flex;flex-direction:column;gap:10px}
 .tx-item{
   background:var(--sf);border:1px solid var(--bd);border-radius:18px;padding:12px 14px;
-  display:flex;align-items:center;gap:12px;box-shadow:0 2px 10px rgba(24,60,40,0.03);
+  display:flex;align-items:center;gap:12px;box-shadow:var(--sh);
 }
-.tx-ico{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;flex:none;font-weight:800}
-.tx-ico.in{background:#DCFCE7;color:#166534}
-.tx-ico.out{background:#FEE2E2;color:#991B1B}
+.tx-ico{
+  width:40px;height:40px;border-radius:14px;display:grid;place-items:center;flex:none;font-weight:800;font-size:16px;
+}
+.tx-ico.in{background:#DCFCE7;color:var(--ok)}
+.tx-ico.out{background:#FEE2E2;color:var(--rd)}
 .tx-mid{flex:1;min-width:0}
-.tx-mid b{display:block;font-size:14px;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-mid b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx-amt{text-align:right;flex:none}
-.tx-amt b{display:block;font-size:14px}
+.tx-amt b{display:block;font-size:14.5px}
 
-.prog-row{margin-bottom:12px}
-.prog-head{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:5px}
-.prog-track{height:8px;border-radius:99px;background:var(--sf-alt);overflow:hidden}
-.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--pr),#3E8E5E)}
+/* Chart & Progress Bars */
+.chart-box{display:flex;align-items:flex-end;gap:12px;height:126px;padding-top:16px}
+.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.chart-bars{display:flex;gap:4px;align-items:flex-end;height:96px}
+.chart-bar{width:12px;border-radius:6px 6px 2px 2px;min-height:4px;transition:height .3s}
+.prog-row{margin-bottom:10px}
+.prog-head{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;margin-bottom:4px}
+.prog-track{height:8px;background:var(--sf-alt);border-radius:99px;overflow:hidden}
+.prog-fill{height:100%;background:var(--pr);border-radius:99px}
 
-.chart-box{display:flex;align-items:flex-end;justify-content:space-around;gap:10px;height:140px;padding:12px 8px 4px;border-bottom:1px solid var(--bd)}
-.chart-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
-.chart-bars{display:flex;align-items:flex-end;gap:4px;height:100px}
-.chart-bar{width:14px;border-radius:6px 6px 2px 2px;min-height:4px;transition:height .3s}
-
-/* Responsive Order Cards */
-.ord-card{
-  background:var(--sf);border:1px solid var(--bd);border-radius:20px;padding:14px;
-  box-shadow:var(--sh);margin-bottom:10px;
-}
-.ord-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
-.ord-foot{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;
-  margin-top:10px;padding-top:10px;border-top:1px solid var(--bd);
-}
-
-#toast{
-  position:fixed;top:calc(16px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);
+/* Toast Notification */
+#tst{
+  position:fixed;bottom:84px;left:50%;transform:translateX(-50%);z-index:50;
   background:var(--pr);color:#fff;padding:10px 18px;border-radius:99px;
-  font-size:13px;font-weight:600;z-index:99;display:none;
-  box-shadow:0 10px 25px rgba(24,60,40,0.28);max-width:calc(100vw - 32px);text-align:center;
+  font-size:13px;font-weight:600;box-shadow:0 10px 24px rgba(24,60,40,0.3);
+  pointer-events:none;white-space:nowrap;max-width:calc(100vw - 32px);overflow:hidden;text-overflow:ellipsis;
 }
-.h{display:none!important}
 </style>
 </head>
 <body>
-<div id="toast"></div>
 
-<!-- TAMPILAN PUBLIK (KATALOG OLIVA STYLE) -->
-<div id="pub" class="app-shell">
+<!-- ===== HALAMAN PUBLIK (OLIVA ORGANIC UI) ===== -->
+<main id="pub" class="app-shell">
+  <!-- Top Bar (Stay Fixed saat Scroll) -->
   <header class="top-bar">
     <div class="brand-wrap">
-      <div id="lg" class="brand-logo"></div>
-      <span id="sn" class="brand-name">Durian Kita</span>
+      <div class="brand-logo" id="lg"></div>
+      <span class="brand-name" id="sn"></span>
     </div>
     <div class="icon-actions">
-      <button class="ico-btn" data-a="focusSearch" aria-label="Cari">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <button class="ico-btn" data-a="focusSearch" aria-label="Cari Durian" title="Cari">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       </button>
-      <button class="ico-btn" data-a="goAdmin" aria-label="Admin CMS" title="Admin &amp; Pembukuan">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+      <button class="ico-btn" data-a="goAdmin" aria-label="Dashboard Admin" title="Admin & Pembukuan">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
       </button>
     </div>
   </header>
 
+  <!-- Greeting -->
   <section class="greet">
     <h1>Selamat Datang!</h1>
     <p id="stg">Durian pilihan, dikemas segar, diantar ke rumah.</p>
   </section>
 
-  <div class="search-wrap">
+  <!-- Search & Sort Pill -->
+  <section class="search-wrap">
     <div class="search-box">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" placeholder="Cari varietas durian…">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Cari varietas durian…">
     </div>
-    <button type="button" class="c-sel pill" id="soBtn" data-a="openSel" data-k="so" aria-label="Urutkan harga">
+    <button type="button" class="c-sel pill" data-a="openSel" data-k="so" aria-label="Urutkan harga">
       <span id="soLbl">Urutkan</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
     </button>
-  </div>
+  </section>
 
-  <div class="chips" id="catChips">
-    <button class="chip on" data-a="setCat" data-id="">Semua</button>
-    <button class="chip" data-a="setCat" data-id="Utuh">Utuh</button>
-    <button class="chip" data-a="setCat" data-id="Pulp">Pulp</button>
-    <button class="chip" data-a="setCat" data-id="Beku">Beku</button>
-    <button class="chip" data-a="setCat" data-id="Olahan">Olahan</button>
-  </div>
+  <!-- Category Chips -->
+  <nav class="chips" id="catChips" aria-label="Kategori Durian">
+    <button class="chip on" data-a="cat" data-id="">Semua</button>
+    <button class="chip" data-a="cat" data-id="Utuh">Utuh</button>
+    <button class="chip" data-a="cat" data-id="Pulp">Pulp</button>
+    <button class="chip" data-a="cat" data-id="Beku">Beku</button>
+    <button class="chip" data-a="cat" data-id="Olahan">Olahan</button>
+  </nav>
 
+  <!-- Promo Card Banner (Slideshow maks 5 foto) -->
   <section class="promo-wrap">
-    <div class="promo-card">
+    <div class="promo-card" id="promoCard">
+      <div class="promo-nav h" id="promoNav">
+        <button type="button" data-a="stepPromo" data-d="-1" aria-label="Slide Sebelumnya">‹</button>
+        <button type="button" data-a="stepPromo" data-d="1" aria-label="Slide Berikutnya">›</button>
+      </div>
       <div class="promo-copy">
-        <span class="promo-pill">PANEN HARI INI</span>
-        <h2>Fresh Durian Premium Harvest</h2>
-        <p>Garansi manis &amp; daging tebal. Pesan instan lewat WhatsApp.</p>
-        <button class="promo-btn" data-a="scrollCatalog">Pesan Sekarang</button>
+        <span class="promo-pill" id="promoPill">PANEN HARI INI</span>
+        <h2 id="promoTitle">Fresh Durian Premium Harvest</h2>
+        <p id="promoDesc">Garansi manis &amp; daging tebal. Pesan instan lewat WhatsApp.</p>
+        <button class="promo-btn" id="promoBtn" data-a="scrollCatalog">Pesan Sekarang</button>
       </div>
       <div class="promo-art" id="promoArt"></div>
+      <div class="promo-dots" id="promoDots"></div>
     </div>
   </section>
 
+  <!-- Catalog Section -->
   <div class="sec-head" id="katalogSec">
-    <h2>Populer Untukmu</h2>
-    <span id="prodCount">0 varietas</span>
+    <h2>Pilihan Durian</h2>
+    <span id="cntLbl">0 varietas</span>
   </div>
-  <div class="grid" id="grid"></div>
+  <section class="grid" id="g"></section>
 
-  <!-- Section 3 Postingan Terakhir Facebook -->
+  <!-- Facebook 3 Postingan Terakhir -->
   <section class="fb-sec" id="fbSec">
     <div class="sec-head">
       <h2>Update Facebook Terbaru</h2>
-      <span id="fbPageLbl">3 Postingan Terakhir</span>
+      <a id="fbPageLink" href="https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr" target="_blank" rel="noopener" style="font-size:12.5px;font-weight:700;color:#1877F2">Lihat Halaman ↗</a>
     </div>
     <div class="fb-list" id="fbList"></div>
   </section>
 
-  <!-- Bottom Navigation Bar -->
+  <!-- Bottom Floating Navigation Bar -->
   <nav class="bottom-nav" aria-label="Navigasi Utama">
     <button class="nav-item on" data-a="navHome">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5Z"/></svg>
@@ -607,7 +690,7 @@ th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mu)}
     </button>
     <button class="nav-item" data-a="scrollCatalog">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
-      <span>Varietas</span>
+      <span>Katalog</span>
     </button>
     <button class="nav-center" data-a="cart" aria-label="Buka Keranjang">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>
@@ -618,291 +701,157 @@ th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mu)}
       <span>Tanya WA</span>
     </a>
     <button class="nav-item" data-a="goAdmin">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
       <span>Admin</span>
     </button>
   </nav>
+</main>
 
-  <!-- Modal Detail Produk (Oliva Product Screen) -->
-  <dialog id="pd">
-    <div id="pdb"></div>
-  </dialog>
+<!-- ===== HALAMAN ADMIN & PEMBUKUAN ===== -->
+<main id="adm" class="h"></main>
 
-  <!-- Modal Keranjang Belanja -->
-  <dialog id="cd">
-    <div class="sheet-handle"></div>
-    <div class="sheet-pad">
-      <div class="sheet-head">
-        <h2>Keranjang Belanja</h2>
-        <button class="ico-btn" data-a="close" aria-label="Tutup">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-      <div id="cb"></div>
-      <label>Nama Pemesan</label>
-      <input id="cn" placeholder="Contoh: Budi Santoso">
-      <label>Alamat Pengiriman</label>
-      <textarea id="ca" rows="2" placeholder="Jalan, nomor rumah, patokan…"></textarea>
-      <div class="cart-actions">
-        <button class="btn o" data-a="close">Tutup</button>
-        <a class="btn wa" id="wal" data-a="send" target="_blank" rel="noopener" href="#">Pesan via WhatsApp</a>
-      </div>
-    </div>
-  </dialog>
-</div>
+<!-- ===== MODAL DETAIL PRODUK (SKALA 60%) ===== -->
+<dialog id="pd">
+  <div id="pdb"></div>
+</dialog>
 
-<!-- MODAL KONFIRMASI KUSTOM -->
-<dialog id="cfmd">
+<!-- ===== MODAL KERANJANG & CHECKOUT WA ===== -->
+<dialog id="cd">
   <div class="sheet-handle"></div>
   <div class="sheet-pad">
-    <h2 id="cfmt" style="font-size:18px;color:var(--pr);margin-bottom:6px">Konfirmasi</h2>
-    <p id="cfmm" class="mu" style="margin-bottom:18px"></p>
-    <div class="cart-actions">
-      <button class="btn o" data-a="cfmNo">Batal</button>
-      <button class="btn d" data-a="cfmYes">Ya, Hapus</button>
+    <div class="sheet-head">
+      <h3>Keranjang Belanja</h3>
+      <button class="pd-circle" style="width:34px;height:34px;box-shadow:none;background:var(--sf-alt)" data-a="close" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="cb"></div>
+    <label>Nama Pemesan</label>
+    <input id="cn" placeholder="Contoh: Budi Santoso">
+    <label>Alamat Pengiriman</label>
+    <textarea id="ca" rows="2" placeholder="Jalan, nomor rumah, patokan…"></textarea>
+    <div class="sheet-actions">
+      <button class="btn o" data-a="close">Tutup</button>
+      <a class="btn wa" id="wal" target="_blank" rel="noopener" data-a="send" href="#">Pesan via WhatsApp</a>
     </div>
   </div>
 </dialog>
 
-<!-- MODAL PILIHAN COMBOBOX KUSTOM (SENADA TEMA) -->
+<!-- ===== MODAL KONFIRMASI ===== -->
+<dialog id="cfmd">
+  <div class="sheet-handle"></div>
+  <div class="sheet-pad">
+    <h3 id="cfmt" style="font-size:18px;color:var(--pr);margin-bottom:6px">Konfirmasi</h3>
+    <p id="cfmm" class="mu" style="font-size:13.5px;margin-bottom:16px"></p>
+    <div class="row" style="justify-content:flex-end">
+      <button class="btn o" data-a="cfmNo">Batal</button>
+      <button class="btn d" data-a="cfmYes">Ya, Lanjutkan</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ===== MODAL PILIHAN (COMBOBOX SENADA TEMA) ===== -->
 <dialog id="seld">
   <div class="sheet-handle"></div>
   <div class="sheet-pad">
     <div class="sheet-head">
-      <h2 id="selt">Pilih Opsi</h2>
-      <button class="ico-btn" data-a="closeSel" aria-label="Tutup">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      <h3 id="selt">Pilih Opsi</h3>
+      <button class="pd-circle" style="width:34px;height:34px;box-shadow:none;background:var(--sf-alt)" data-a="closeSel" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </div>
     <div id="selb"></div>
   </div>
 </dialog>
 
-<!-- MODAL KALENDER KUSTOM (SENADA TEMA) -->
+<!-- ===== MODAL KALENDER SENADA TEMA ===== -->
 <dialog id="cald">
   <div class="sheet-handle"></div>
   <div class="sheet-pad">
     <div class="sheet-head">
-      <h2>Pilih Tanggal</h2>
-      <button class="ico-btn" data-a="closeCal" aria-label="Tutup">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      <h3>Pilih Tanggal</h3>
+      <button class="pd-circle" style="width:34px;height:34px;box-shadow:none;background:var(--sf-alt)" data-a="closeCal" aria-label="Tutup">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </div>
     <div id="calb"></div>
   </div>
 </dialog>
 
-<!-- TAMPILAN ADMIN & PEMBUKUAN -->
-<div id="adm" class="h"></div>
+<div id="tst" class="h"></div>
 
-<!-- Firebase SDK (App & Realtime Database) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-
 <script>
-const K='katalog-durian-v1';
-const DB_URL='https://tesdurian-default-rtdb.asia-southeast1.firebasedatabase.app';
-function uid(){return Math.random().toString(36).slice(2,9)}
+const FB_URL='https://tesdurian-default-rtdb.asia-southeast1.firebasedatabase.app';
+const K='katalog_durian_v2';
+const $=s=>document.querySelector(s);
+const uid=()=>Math.random().toString(36).slice(2,8).toUpperCase();
 const today=()=>new Date().toISOString().slice(0,10);
+const rp=n=>'Rp'+(+n||0).toLocaleString('id-ID');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const wa=t=>`https://wa.me/${db.s.wa}?text=${encodeURIComponent(t)}`;
+
+const DUR=`<svg viewBox="0 0 64 64" fill="none"><ellipse cx="32" cy="34" rx="18" ry="22" fill="#9ED36A" stroke="#183C28" stroke-width="2.4"/><path d="M32 12 28 5m4 7 4-6M16 24l-6-3m4 14-7 1m11 10-5 5m35-27 6-3m-4 14 7 1m-11 10 5 5M32 12v44" stroke="#183C28" stroke-width="2.4" stroke-linecap="round"/><path d="M25 22c-3 7-3 17 0 24m14-24c3 7 3 17 0 24" stroke="#183C28" stroke-width="2" stroke-linecap="round"/><circle cx="27" cy="30" r="1.8" fill="#183C28"/><circle cx="37" cy="38" r="1.8" fill="#183C28"/><circle cx="32" cy="34" r="1.8" fill="#183C28"/></svg>`;
+const FB_ICO=`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12Z"/></svg>`;
+const CHEV=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+const CALI=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="4"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>`;
 
 const seed=()=>({
-  s:{name:'Durian Kita',wa:'6281234567890',pin:'1234',tag:'Durian pilihan, dikemas segar, diantar ke rumah.',fbAppId:'',fbPageId:'',fbToken:'',fbPageUrl:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr',fbPageName:'Durian Kita Official'},
+  s:{
+    name:'Durian Kita',
+    tag:'Durian pilihan, dikemas segar, diantar ke rumah.',
+    wa:'6281234567890',
+    pin:'1234',
+    promoPill:'PANEN HARI INI',
+    promoTitle:'Fresh Durian Premium Harvest',
+    promoDesc:'Garansi manis & daging tebal. Pesan instan lewat WhatsApp.',
+    promoBtn:'Pesan Sekarang',
+    promoImg:'',
+    promoSlides:[],
+    fbPageUrl:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr'
+  },
   p:[
-    ['Musang King','Utuh',185000,20,'Daging tebal kuning emas, tekstur creamy lembut, rasa manis pahit seimbang khas Pahang.'],
-    ['Monthong','Utuh',95000,30,'Manis lembut, tekstur creamy, aroma tidak terlalu menyengat, cocok untuk semua.'],
-    ['Bawor','Utuh',65000,25,'Varietas unggul Banyumas, legit, manis pekat, daging tebal dan biji kecil.'],
-    ['Petruk','Utuh',70000,15,'Daging tebal berserat halus, manis kuat dengan sedikit sensasi pahit khas Jepara.'],
-    ['Pulp Beku Musang King','Beku',150000,12,'100% daging durian murni tanpa biji, dikemas vakum higienis, tahan 3 bulan.']
-  ].map(a=>({id:uid(),name:a[0],cat:a[1],price:a[2],stock:a[3],desc:a[4],on:true,img:''})),
-  fb:[
-    {id:'fb1',date:today(),cap:'Panen perdana Musang King & Monthong hari ini! Daging tebal kuning mentega, siap kirim langsung ke rumah Anda.',img:'',url:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr'},
-    {id:'fb2',date:today(),cap:'Stok Pulp Beku Musang King 100% murni tanpa biji baru saja masuk freezer. Praktis tinggal santap!',img:'',url:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr'},
-    {id:'fb3',date:today(),cap:'Promo spesial akhir pekan untuk pembelian minimal 3 kg Durian Bawor & Petruk. Hubungi WA kami sekarang.',img:'',url:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr'}
+    {id:'D1',name:'Musang King',cat:'Utuh',price:185000,stock:20,desc:'Daging tebal kuning emas, rasa manis pahit legit seimbang dengan biji kecil.',img:'',on:true},
+    {id:'D2',name:'Monthong',cat:'Utuh',price:95000,stock:30,desc:'Manis lembut, tekstur creamy, aroma tidak terlalu menyengat, cocok untuk semua.',img:'',on:true},
+    {id:'D3',name:'Bawor',cat:'Utuh',price:65000,stock:25,desc:'Daging oranye lembut dengan perpaduan manis legit dan sedikit pahit khas.',img:'',on:true},
+    {id:'D4',name:'Daging Kupas (Pulp)',cat:'Pulp',price:70000,stock:18,desc:'Daging durian murni tanpa biji siap santap, praktis untuk keluarga maupun olahan.',img:'',on:true},
+    {id:'D5',name:'Durian Beku Vakum',cat:'Beku',price:60000,stock:22,desc:'Dikemas vakum higienis untuk mempertahankan kesegaran dan aroma asli durian.',img:'',on:true},
+    {id:'D6',name:'Pancake Durian',cat:'Olahan',price:50000,stock:15,desc:'Kulit tipis lembut berisi krim lumer dan daging durian asli pilihan.',img:'',on:true}
   ],
-  o:[
-    {id:'ORD01',date:today(),name:'Rina Marlina',addr:'Jl. Merdeka No. 14',items:[{id:'p1',name:'Musang King',price:185000,qty:2}],total:370000,status:'Selesai'},
-    {id:'ORD02',date:today(),name:'Dimas Pratama',addr:'Komp. Griya Asri B4',items:[{id:'p2',name:'Monthong',price:95000,qty:3}],total:285000,status:'Baru'}
-  ],
+  o:[{id:'ORD01',date:today(),name:'Siti Aminah',addr:'Jl. Melati No. 12',items:[{id:'D1',name:'Musang King',price:185000,qty:2}],total:370000,status:'Baru'}],
   t:[
-    {id:uid(),date:today(),type:'in',cat:'Penjualan',note:'Pesanan Rina Marlina (2 kg Musang King)',amt:370000},
-    {id:uid(),date:today(),type:'out',cat:'Beli stok',note:'Kulakan kebun durian lokal',amt:150000},
-    {id:uid(),date:today(),type:'out',cat:'Kemasan',note:'Box vakum & ice gel',amt:35000}
+    {id:'T1',date:today(),type:'in',cat:'Penjualan',note:'Penjualan harian',amt:370000},
+    {id:'T2',date:today(),type:'out',cat:'Beli stok',note:'Kulakan kebun',amt:145000}
+  ],
+  fb:[
+    {id:'FB1',date:today(),cap:'Panen perdana Musang King & Bawor super hari ini! Daging tebal kuning legit, siap kirim instan ke rumah Anda.',img:'',url:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr'},
+    {id:'FB2',date:today(),cap:'Restock Durian Kupas (Pulp) & Durian Beku Vakum kemasan higienis. Garansi manis, tidak manis siap tukar!',img:'',url:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr'},
+    {id:'FB3',date:today(),cap:'Terima kasih pelanggan setia sudah borong durian akhir pekan ini. Yuk cek katalog kami untuk stok terbaru!',img:'',url:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr'}
   ]
 });
 
-let db;
-function initDb(){
-  let raw=null;
-  try{raw=JSON.parse(localStorage.getItem(K))}catch(e){}
-  const base=seed();
-  if(!raw||typeof raw!=='object'){db=base;return}
-  db={
-    s:{...base.s,...(raw.s||{})},
-    p:Array.isArray(raw.p)&&raw.p.length?raw.p:base.p,
-    fb:Array.isArray(raw.fb)&&raw.fb.length?raw.fb.slice(0,3):base.fb,
-    o:Array.isArray(raw.o)?raw.o:base.o,
-    t:Array.isArray(raw.t)?raw.t:base.t
-  };
-}
-initDb();
-
-/* ===== Firebase Realtime Database Sync ===== */
-let rtdb=null,rtRef=null,isRemote=false,cloudMode='init',pollTmr=null;
-function setSyncUI(state,txt){
-  const el=$('#syncStat'),tx=$('#syncTxt');
-  if(!el||!tx)return;
-  el.className='sync-pill '+(state==='live'?'live':state==='err'?'err':'');
-  tx.textContent=txt;
-}
-
-function applyRemoteData(val){
-  if(!val||typeof val!=='object')return;
-  isRemote=true;
-  const base=seed();
-  db={
-    s:{...base.s,...(val.s||{})},
-    p:Array.isArray(val.p)?val.p:db.p,
-    fb:Array.isArray(val.fb)?val.fb.slice(0,3):db.fb,
-    o:Array.isArray(val.o)?val.o:db.o,
-    t:Array.isArray(val.t)?val.t:db.t
-  };
-  try{localStorage.setItem(K,JSON.stringify(db))}catch(e){}
-  $('#sn').textContent=db.s.name;
-  tg();lg();grid();renderFb();
-  if(viewMode==='admin')admin();
-  isRemote=false;
-}
-
-async function pullCloud(){
-  try{
-    const res=await fetch(DB_URL+'/katalog_durian.json');
-    if(res.status===401||res.status===403){
-      cloudMode='locked';
-      setSyncUI('err','Terkunci (Rules)');
-      return;
-    }
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    const val=await res.json();
-    cloudMode='rest';
-    setSyncUI('live','Cloud Aktif');
-    if(val&&val.p)applyRemoteData(val);
-    else pushCloud();
-  }catch(e){
-    cloudMode='offline';
-    setSyncUI('err','Offline Lokal');
+let db=(()=>{
+  const d=JSON.parse(localStorage.getItem(K)||'null')||seed();
+  if(!Array.isArray(d.fb)||!d.fb.length)d.fb=seed().fb;
+  if(!Array.isArray(d.s.promoSlides)){
+    d.s.promoSlides=d.s.promoImg?[{img:d.s.promoImg,x:50,y:50}]:[];
   }
-}
+  return d;
+})();
 
-async function pushCloud(){
-  if(isRemote)return;
-  try{
-    if(rtRef)await rtRef.set(db);
-    else{
-      const res=await fetch(DB_URL+'/katalog_durian.json',{
-        method:'PUT',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(db)
-      });
-      if(!res.ok)throw new Error('HTTP '+res.status);
-    }
-    setSyncUI('live','Cloud Aktif');
-  }catch(e){
-    setSyncUI('err','Gagal Sync');
-  }
-}
+let cart={},authed=false,tab='p',ed=null,edT=null,edFb=null,mo='',viewMode='pub';
+let selCat='',sortBy='',selProdId=null,selKg=1,ordFilter='Semua',txFilter='all';
+let fbRef=null,fbMode='local',syncTimer=null,cfmCb=null,selCtx=null,calView=today().slice(0,7);
+let promoIdx=0,promoTmr=null,edSlideIdx=0;
 
-function initFirebase(){
-  try{
-    if(window.firebase){
-      const app=firebase.apps.length?firebase.app():firebase.initializeApp({databaseURL:DB_URL});
-      rtdb=firebase.database(app);
-      rtRef=rtdb.ref('katalog_durian');
-      rtRef.on('value',snap=>{
-        cloudMode='sdk';
-        setSyncUI('live','Cloud Aktif');
-        const val=snap.val();
-        if(val&&val.p)applyRemoteData(val);
-        else pushCloud();
-      },()=>{
-        pullCloud();
-      });
-    }else{
-      pullCloud();
-    }
-  }catch(e){
-    pullCloud();
-  }
-  clearInterval(pollTmr);
-  pollTmr=setInterval(()=>{if(cloudMode!=='sdk')pullCloud()},12000);
-}
-
-const save=()=>{
-  try{localStorage.setItem(K,JSON.stringify(db))}catch(e){toast('Gagal menyimpan lokal')}
-  pushCloud();
-};
-const $=s=>document.querySelector(s);
-const rp=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n||0);
-const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2600)}
-
-let cart={},authed=false,tab='p',ed=null,edT=null,edFb=null,mo='',selCat='',selProdId=null,selKg=1,cfmCb=null,viewMode='pub',ordFilter='Semua',txFilter='all',sortBy='',selCtx=null,calView=today().slice(0,7);
-const wa=t=>`https://wa.me/${db.s.wa}?text=${encodeURIComponent(t)}`;
-
-const CHEV='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
-const CALI='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
+const lgHtml=()=>db.s.logo?`<img src="${db.s.logo}" alt="">`:DUR;
 const fmtDateID=iso=>{
   if(!iso)return'Pilih tanggal';
   const [y,m,d]=iso.split('-');
   const bln=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
   return `${Number(d)} ${bln[Number(m)-1]||m} ${y}`;
 };
-function openSelModal(title,opts,cur,cb){
-  selCtx={opts,cb};
-  $('#selt').textContent=title;
-  $('#selb').innerHTML=opts.map((o,idx)=>`
-    <button type="button" class="pick-opt${String(o.v)===String(cur)?' on':''}" data-a="pickSel" data-idx="${idx}">
-      <span>${esc(o.l)}</span>
-      ${String(o.v)===String(cur)?'<span>✓</span>':''}
-    </button>`).join('');
-  $('#seld').showModal();
-}
-function renderCal(){
-  const [y,m]=calView.split('-').map(Number);
-  const blnFull=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-  const first=new Date(y,m-1,1).getDay();
-  const days=new Date(y,m,0).getDate();
-  const cur=edT?edT.date:today();
-  let cells='';
-  for(let i=0;i<first;i++)cells+='<div></div>';
-  for(let d=1;d<=days;d++){
-    const iso=`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    cells+=`<button type="button" class="cal-day${iso===cur?' on':''}${iso===today()?' tod':''}" data-a="pickCal" data-d="${iso}">${d}</button>`;
-  }
-  $('#calb').innerHTML=`
-    <div class="cal-head">
-      <button type="button" class="ico-btn" data-a="stepCal" data-d="-1" aria-label="Bulan sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m15 18-6-6 6-6"/></svg></button>
-      <b style="font-size:15px;color:var(--pr)">${blnFull[m-1]} ${y}</b>
-      <button type="button" class="ico-btn" data-a="stepCal" data-d="1" aria-label="Bulan berikutnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg></button>
-    </div>
-    <div class="cal-grid">
-      ${['Min','Sen','Sel','Rab','Kam','Jum','Sab'].map(w=>`<div class="cal-dow">${w}</div>`).join('')}
-      ${cells}
-    </div>`;
-}
-function syncFormDrafts(){
-  if(ed){
-    if($('#f_n'))ed.name=$('#f_n').value;
-    if($('#f_p'))ed.price=$('#f_p').value;
-    if($('#f_s'))ed.stock=$('#f_s').value;
-    if($('#f_d'))ed.desc=$('#f_d').value;
-    if($('#f_i'))ed.img=$('#f_i').value.trim()||ed.img;
-    if($('#f_o'))ed.on=$('#f_o').checked;
-  }
-  if(edT){
-    if($('#t_n'))edT.note=$('#t_n').value;
-    if($('#t_a'))edT.amt=$('#t_a').value;
-  }
-}
 
 function askConfirm(title,msg,cb){
   $('#cfmt').textContent=title;
@@ -911,56 +860,190 @@ function askConfirm(title,msg,cb){
   $('#cfmd').showModal();
 }
 
-const DUR='<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="#68B938" stroke="#183C28" stroke-width="2.4" stroke-linejoin="round"><path d="M28 15L32 5L36 15ZM46 20L55 14L51 28ZM52 33L61 36L52 44ZM47 52L53 59L41 56ZM27 56L32 62L37 56ZM22 56L11 59L17 47ZM12 44L3 36L12 28ZM13 27L9 14L22 20Z"/></g><ellipse cx="32" cy="36" rx="20" ry="22" fill="#A6DF6B" stroke="#183C28" stroke-width="2.6"/><path d="M24 23c-3 7-3 19 0 26M32 20v32M40 23c3 7 3 19 0 26" fill="none" stroke="#183C28" stroke-width="1.8" stroke-linecap="round"/><g fill="#183C28"><circle cx="23" cy="31" r="1.8"/><circle cx="41" cy="31" r="1.8"/><circle cx="32" cy="36" r="2"/><circle cx="24" cy="43" r="1.8"/><circle cx="40" cy="43" r="1.8"/></g></svg>';
-const FB_ICO='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95Z"/></svg>';
-const lgHtml=()=>db.s.logo?`<img src="${db.s.logo}" alt="Logo">`:DUR;
+function openSelModal(title,opts,curVal,cb){
+  selCtx={opts,cb};
+  $('#selt').textContent=title;
+  $('#selb').innerHTML=opts.map((o,i)=>`
+    <button type="button" class="pick-opt${String(o.v)===String(curVal)?' on':''}" data-a="pickSel" data-idx="${i}">
+      <span>${esc(o.l)}</span>
+      ${String(o.v)===String(curVal)?'<span>✓</span>':''}
+    </button>`).join('');
+  $('#seld').showModal();
+}
 
+function renderCal(){
+  const [y,m]=calView.split('-').map(Number);
+  const bln=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const first=new Date(y,m-1,1).getDay();
+  const days=new Date(y,m,0).getDate();
+  const cur=(edT&&edT.date)||today();
+  const tod=today();
+  let cells=['Min','Sen','Sel','Rab','Kam','Jum','Sab'].map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for(let i=0;i<first;i++)cells+='<div></div>';
+  for(let d=1;d<=days;d++){
+    const iso=`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    cells+=`<button type="button" class="cal-day${iso===cur?' on':''}${iso===tod?' tod':''}" data-a="pickCal" data-d="${iso}">${d}</button>`;
+  }
+  $('#calb').innerHTML=`
+    <div class="cal-head">
+      <button type="button" class="btn o s" data-a="stepCal" data-d="-1" style="min-height:34px;padding:4px 12px">‹</button>
+      <b style="color:var(--pr);font-size:15px">${bln[m-1]} ${y}</b>
+      <button type="button" class="btn o s" data-a="stepCal" data-d="1" style="min-height:34px;padding:4px 12px">›</button>
+    </div>
+    <div class="cal-grid">${cells}</div>`;
+}
+
+function syncFormDrafts(){
+  if(ed){
+    if($('#f_n'))ed.name=$('#f_n').value;
+    if($('#f_p'))ed.price=$('#f_p').value;
+    if($('#f_s'))ed.stock=$('#f_s').value;
+    if($('#f_d'))ed.desc=$('#f_d').value;
+    if($('#f_i')&&$('#f_i').value.trim())ed.img=$('#f_i').value.trim();
+    if($('#f_o'))ed.on=$('#f_o').checked;
+  }
+  if(edT){
+    if($('#t_n'))edT.note=$('#t_n').value;
+    if($('#t_a'))edT.amt=$('#t_a').value;
+  }
+}
+
+function toast(m){
+  const t=$('#tst');
+  t.textContent=m;
+  t.classList.remove('h');
+  clearTimeout(toast.i);
+  toast.i=setTimeout(()=>t.classList.add('h'),2400);
+}
+
+/* ===== FIREBASE SYNC ===== */
+function normalizeDb(raw){
+  if(!raw||typeof raw!=='object')return null;
+  const base=seed();
+  const s={...base.s,...(raw.s||{})};
+  if(!Array.isArray(s.promoSlides)){
+    s.promoSlides=s.promoImg?[{img:s.promoImg,x:50,y:50}]:[];
+  }
+  return{
+    s,
+    p:Array.isArray(raw.p)?raw.p:Object.values(raw.p||base.p),
+    o:Array.isArray(raw.o)?raw.o:Object.values(raw.o||[]),
+    t:Array.isArray(raw.t)?raw.t:Object.values(raw.t||[]),
+    fb:Array.isArray(raw.fb)&&raw.fb.length?raw.fb:base.fb
+  };
+}
+
+function save(){
+  localStorage.setItem(K,JSON.stringify(db));
+  pushCloud();
+}
+
+function pushCloud(){
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(async()=>{
+    try{
+      if(fbRef&&fbMode==='sdk'){
+        await fbRef.set(db);
+      }else{
+        const r=await fetch(`${FB_URL}/katalog_durian.json`,{
+          method:'PUT',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(db)
+        });
+        if(r.ok)fbMode='rest';
+      }
+    }catch(e){}
+  },250);
+}
+
+async function pullCloud(){
+  try{
+    const r=await fetch(`${FB_URL}/katalog_durian.json`);
+    if(!r.ok)return;
+    const val=await r.json();
+    const norm=normalizeDb(val);
+    if(norm){
+      db=norm;
+      localStorage.setItem(K,JSON.stringify(db));
+      $('#sn').textContent=db.s.name;
+      tg();lg();grid();renderFb();
+      if(viewMode==='admin'&&authed)admin();
+    }else{
+      pushCloud();
+    }
+  }catch(e){}
+}
+
+function initFirebase(){
+  try{
+    if(window.firebase){
+      const app=firebase.apps.length?firebase.app():firebase.initializeApp({databaseURL:FB_URL});
+      fbRef=app.database().ref('katalog_durian');
+      fbMode='sdk';
+      fbRef.on('value',snap=>{
+        const norm=normalizeDb(snap.val());
+        if(norm){
+          db=norm;
+          localStorage.setItem(K,JSON.stringify(db));
+          $('#sn').textContent=db.s.name;
+          tg();lg();grid();renderFb();
+          if(viewMode==='admin'&&authed)admin();
+        }else{
+          pushCloud();
+        }
+      },()=>pullCloud());
+      return;
+    }
+  }catch(e){}
+  pullCloud();
+}
+
+/* ===== KATALOG PUBLIK & FACEBOOK FEED ===== */
 function renderFb(){
-  const list=(db.fb||[]).slice(0,3);
-  const sec=$('#fbSec');
-  if(!sec)return;
-  if(!list.length){sec.classList.add('h');return}
-  sec.classList.remove('h');
+  const box=$('#fbList');
+  if(!box)return;
   const pageUrl=db.s.fbPageUrl||'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr';
-  $('#fbPageLbl').innerHTML=`<a href="${esc(pageUrl)}" target="_blank" rel="noopener" style="color:#1877F2;font-weight:700">Kunjungi Page ↗</a>`;
-  $('#fbList').innerHTML=list.map(post=>`
-    <a class="fb-card" href="${esc(post.url||pageUrl)}" target="_blank" rel="noopener">
-      <div class="fb-thumb" ${post.img?`style="background-image:url('${esc(post.img)}')"`:''}>
+  if($('#fbPageLink'))$('#fbPageLink').href=pageUrl;
+  const posts=(db.fb||[]).slice(0,3);
+  box.innerHTML=posts.map(fp=>`
+    <a class="fb-card" href="${esc(fp.url||pageUrl)}" target="_blank" rel="noopener">
+      <div class="fb-thumb" ${fp.img?`style="background-image:url('${esc(fp.img)}')"`:''}>
+        ${fp.img?'':DUR}
         <span class="fb-pill">${FB_ICO} Facebook</span>
-        ${post.img?'':DUR}
       </div>
       <div class="fb-body">
-        <span class="fb-date">${fmtDateID(post.date)}</span>
-        <div class="fb-cap">${esc(post.cap||'Lihat update terbaru kami di Facebook.')}</div>
+        <span class="fb-date">${fmtDateID(fp.date)}</span>
+        <p class="fb-cap">${esc(fp.cap)}</p>
         <span class="fb-link">Lihat di Facebook ↗</span>
       </div>
     </a>`).join('');
 }
 
-/* ===== KATALOG PUBLIK ===== */
 function grid(){
-  const q=$('#q').value.toLowerCase(),so=sortBy;
-  let l=db.p.filter(p=>p.on&&p.name.toLowerCase().includes(q)&&(!selCat||p.cat===selCat));
-  if(so)l.sort((a,b)=>so==='a'?a.price-b.price:b.price-a.price);
-  $('#prodCount').textContent=l.length+' varietas';
-  $('#grid').innerHTML=l.map(p=>{
+  const q=$('#q').value.trim().toLowerCase();
+  let l=db.p.filter(p=>p.on&&(!selCat||p.cat===selCat)&&(!q||(p.name+p.desc).toLowerCase().includes(q)));
+  if(sortBy==='a')l.sort((a,b)=>a.price-b.price);
+  if(sortBy==='d')l.sort((a,b)=>b.price-a.price);
+  $('#cntLbl').textContent=`${l.length} varietas`;
+  $('#g').innerHTML=l.map(p=>{
     const inCart=cart[p.id]||0;
-    return `<div class="pc" data-a="detail" data-id="${p.id}">
-      <div class="pc-img-box" ${p.img?`style="background-image:url('${p.img}')"`:''}>
-        <span class="pc-tag${p.stock>0?'':' out'}">${p.stock>0?esc(p.cat):'Habis'}</span>
-        ${inCart?`<span class="pc-qty-badge">${inCart} kg</span>`:''}
-        ${p.img?'':DUR}
-      </div>
-      <h3>${esc(p.name)}</h3>
-      <div class="pc-sub">${esc(p.desc)}</div>
-      <div class="pc-foot">
-        <div class="pc-price">${rp(p.price)}<small>/kg</small></div>
-        <button class="bag-btn" data-a="add" data-id="${p.id}" ${p.stock>0?'':'disabled'} aria-label="Tambah ke keranjang">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7L6 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>
-        </button>
-      </div>
-    </div>`;
-  }).join('')||'<p class="mu" style="grid-column:1/-1;text-align:center;padding:24px 0">Varietas durian tidak ditemukan.</p>';
+    return `
+      <article class="pc" data-a="detail" data-id="${p.id}">
+        <div class="pc-img-box" ${p.img?`style="background-image:url('${p.img}')"`:''}>
+          ${p.img?'':DUR}
+          <span class="pc-tag${p.stock>0?'':' out'}">${p.stock>0?`${p.stock} kg`:'Habis'}</span>
+          ${inCart?`<span class="pc-qty-badge">${inCart} kg</span>`:''}
+        </div>
+        <h3>${esc(p.name)}</h3>
+        <div class="pc-sub">${esc(p.desc||p.cat)}</div>
+        <div class="pc-foot">
+          <div class="pc-price">${rp(p.price)}<small>/kg</small></div>
+          <button class="bag-btn" data-a="add" data-id="${p.id}" ${p.stock>0?'':'disabled'} aria-label="Tambah ${esc(p.name)}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </article>`;
+  }).join('')||'<p class="mu" style="grid-column:1/-1;text-align:center;padding:28px 0">Tidak ada varietas durian yang cocok.</p>';
   cartBar();
 }
 
@@ -978,38 +1061,54 @@ function renderDetail(){
   if(!p)return;
   const sizes=[1,2,3,5];
   $('#pdb').innerHTML=`
-    <div class="pd-hero">
-      <div class="sheet-handle" style="margin-bottom:10px"></div>
+    <div class="pd-hero${p.img?' has-img':''}" ${p.img?`style="background-image:url('${esc(p.img)}')"`:''}>
       <div class="pd-top">
-        <button class="pd-circle" data-a="closePd" aria-label="Kembali">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <button class="pd-circle" data-a="closePd" aria-label="Tutup">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
         <a class="pd-circle" target="_blank" rel="noopener" href="${wa(`Halo ${db.s.name}, saya ingin tanya stok ${p.name} (${rp(p.price)}/kg).`)}" aria-label="Tanya WhatsApp">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>
         </a>
       </div>
-      <div class="pd-art" ${p.img?`style="background-image:url('${p.img}')"`:''}>${p.img?'':DUR}</div>
+      ${p.img?'':`<div class="pd-art">${DUR}</div>`}
+      <div class="pd-hero-meta">
+        <span class="pd-brand">${esc(db.s.name)} · ${esc(p.cat)}</span>
+        <span class="pd-stock-pill">${p.stock>0?`Stok ${p.stock} kg`:'Stok Habis'}</span>
+      </div>
     </div>
-    <div class="pd-body">
-      <span class="pd-brand">${esc(db.s.name)} · ${esc(p.cat)}</span>
-      <h2 class="pd-title">${esc(p.name)}</h2>
-      <div class="pd-rating">
-        <span style="color:#EAB308;letter-spacing:1px">★★★★★</span>
-        <b>4.9</b> <span>(Stok tersedia ${p.stock} kg)</span>
+    <div class="pd-scroll">
+      <div class="pd-head-row">
+        <div>
+          <h2 class="pd-title">${esc(p.name)}</h2>
+          <div class="pd-rating">
+            <span style="color:#EAB308;letter-spacing:1px">★★★★★</span>
+            <b>4.9</b> <span>· Pilihan Terbaik</span>
+          </div>
+        </div>
+        <div class="pd-price-box">
+          <div class="pd-price">${rp(p.price)}</div>
+          <span class="pd-price-unit">per kilogram</span>
+        </div>
       </div>
-      <div class="pd-price">${rp(p.price)} <small>/ kg</small></div>
-      <p class="pd-desc">${esc(p.desc)}</p>
+      <div class="pd-desc-box">
+        <p class="pd-desc">${esc(p.desc||'Durian pilihan berkualitas tinggi dengan daging tebal dan rasa legit.')}</p>
+      </div>
       <div class="pd-highlights">
-        <div class="hl-item"><div class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></div><span>Garansi Manis</span></div>
-        <div class="hl-item"><div class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></div><span>100% Alami</span></div>
-        <div class="hl-item"><div class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg></div><span>Daging Tebal</span></div>
-        <div class="hl-item"><div class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4"/></svg></div><span>Panen Segar</span></div>
+        <div class="hl-item"><div class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></div><span>Garansi Manis</span></div>
+        <div class="hl-item"><div class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></div><span>100% Alami</span></div>
+        <div class="hl-item"><div class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg></div><span>Daging Tebal</span></div>
+        <div class="hl-item"><div class="hl-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4"/></svg></div><span>Panen Segar</span></div>
       </div>
-      <span class="size-label">Pilih Berat (kg)</span>
+      <div class="size-head">
+        <span class="size-label">Pilih Berat Pesanan</span>
+        <span class="size-sub">Estimasi ${selKg} kg</span>
+      </div>
       <div class="size-row">
         ${sizes.map(s=>`<button class="sz-btn${selKg===s?' on':''}" data-a="pickKg" data-id="${s}">${s} kg</button>`).join('')}
       </div>
-      <button class="btn full" data-a="addDetail" ${p.stock>0?'':'disabled'}>
+    </div>
+    <div class="pd-foot">
+      <button class="btn full" style="min-height:44px;padding:11px 16px" data-a="addDetail" ${p.stock>0?'':'disabled'}>
         ${p.stock>0?`Tambah ke Keranjang · ${rp(p.price*selKg)}`:'Stok Sedang Habis'}
       </button>
     </div>`;
@@ -1108,14 +1207,20 @@ function vP(){
       <input id="f_n" placeholder="Contoh: Musang King Super" value="${esc(ed.name)}">
       <div class="bar">
         <div><label>Kategori</label><button type="button" class="c-sel" data-a="openSel" data-k="f_c"><span>${esc(ed.cat||'Utuh')}</span>${CHEV}</button></div>
-        <div><label>Harga / kg (Rp)</label><input id="f_p" type="number" min="0" placeholder="150000" value="${ed.price??''}"></div>
+        <div><label>Harga / kg (Rp)</label><input id="f_p" type="number" min="0" placeholder="185000" value="${ed.price??''}"></div>
         <div><label>Stok (kg)</label><input id="f_s" type="number" min="0" step="0.5" placeholder="20" value="${ed.stock??''}"></div>
       </div>
       <label>Deskripsi Rasa &amp; Tekstur</label>
-      <textarea id="f_d" rows="2" placeholder="Jelaskan rasa, ketebalan daging, dan aroma…">${esc(ed.desc)}</textarea>
-      <label>Foto Produk (Unggah maks 300 KB atau tempel URL gambar)</label>
-      <input type="file" accept="image/*" data-c="img" style="margin-bottom:8px;font-size:13px">
-      <input id="f_i" placeholder="https://…" value="${esc(ed.img&&ed.img.startsWith('data:')?'':ed.img)}">
+      <textarea id="f_d" rows="2" placeholder="Jelaskan rasa, ketebalan daging, dan asal durian…">${esc(ed.desc)}</textarea>
+      <label>Foto Produk (Otomatis dikompres, atau tempel URL gambar)</label>
+      <div class="row" style="gap:10px;flex-wrap:nowrap;margin-bottom:8px">
+        <div id="edImgPrev" class="cms-thumb" style="width:52px;height:52px;border-radius:14px;${ed.img?`background-image:url('${esc(ed.img)}')`:''}">${ed.img?'':DUR}</div>
+        <div style="flex:1;min-width:0">
+          <input type="file" accept="image/*" data-c="img" style="font-size:13px">
+          ${ed.img?`<button type="button" class="btn d s" data-a="rmEdImg" style="margin-top:6px;min-height:30px;padding:3px 10px;font-size:11.5px">Hapus Foto</button>`:''}
+        </div>
+      </div>
+      <input id="f_i" placeholder="Atau tempel URL gambar https://…" value="${esc(ed.img&&ed.img.startsWith('data:')?'':ed.img)}">
       <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin-top:12px">
         <input type="checkbox" id="f_o" style="width:18px;height:18px;accent-color:var(--pr)" ${ed.on?'checked':''}> Tampilkan di Katalog Publik
       </label>
@@ -1319,6 +1424,10 @@ function vB(){
 
 function vS(){
   const pageUrl=db.s.fbPageUrl||'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr';
+  const slides=Array.isArray(db.s.promoSlides)?db.s.promoSlides:[];
+  if(edSlideIdx>=5)edSlideIdx=0;
+  const curSlide=slides[edSlideIdx]||{img:'',x:50,y:50};
+  const presets=[['Atas',50,15],['Tengah',50,50],['Bawah',50,85],['Kiri',15,50],['Kanan',85,50]];
   const fbForm=edFb!==null&&db.fb[edFb]?`
     <div style="background:var(--bg);padding:14px;border-radius:18px;margin:12px 0;border:1.5px solid var(--pr)">
       <b style="color:var(--pr);display:block;margin-bottom:6px">Edit Kartu Facebook #${edFb+1}</b>
@@ -1326,19 +1435,79 @@ function vS(){
       <textarea id="fb_cap" rows="3" placeholder="Tulis atau salin caption dari Facebook…">${esc(db.fb[edFb].cap||'')}</textarea>
       <label>Link Postingan / Halaman Facebook</label>
       <input id="fb_url" placeholder="https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr" value="${esc(db.fb[edFb].url||pageUrl)}">
-      <label>Foto Thumbnail (Unggah maks 300 KB atau tempel URL gambar)</label>
-      <input type="file" accept="image/*" data-c="fbimg" style="margin-bottom:8px;font-size:13px">
-      <input id="fb_img" placeholder="https://…" value="${esc(db.fb[edFb].img&&db.fb[edFb].img.startsWith('data:')?'':(db.fb[edFb].img||''))}">
+      <label>Foto Thumbnail (Otomatis dikompres, atau tempel URL gambar)</label>
+      <div class="row" style="gap:10px;flex-wrap:nowrap;margin-bottom:8px">
+        <div id="fbImgPrev" class="cms-thumb" style="width:52px;height:52px;border-radius:14px;${db.fb[edFb].img?`background-image:url('${esc(db.fb[edFb].img)}')`:''}">${db.fb[edFb].img?'':FB_ICO}</div>
+        <div style="flex:1;min-width:0">
+          <input type="file" accept="image/*" data-c="fbimg" style="font-size:13px">
+          ${db.fb[edFb].img?`<button type="button" class="btn d s" data-a="rmFbImg" style="margin-top:6px;min-height:30px;padding:3px 10px;font-size:11.5px">Hapus Foto</button>`:''}
+        </div>
+      </div>
+      <input id="fb_img" placeholder="Atau tempel URL gambar https://…" value="${esc(db.fb[edFb].img&&db.fb[edFb].img.startsWith('data:')?'':(db.fb[edFb].img||''))}">
       <div class="row" style="margin-top:12px">
         <button type="button" class="btn s" data-a="saveFbPost">Simpan Kartu #${edFb+1}</button>
         <button type="button" class="btn o s" data-a="cancelFbPost">Batal</button>
       </div>
     </div>`:'';
+
   return `
     <div class="card">
       <div class="row" style="justify-content:space-between;margin-bottom:4px">
-        <h3 style="color:var(--pr)">Profil &amp; Kontak Toko</h3>
+        <h3 style="color:var(--pr)">Banner Promo Beranda (Slide Maks 5 Foto)</h3>
+        <span class="tag">${slides.filter(s=>s&&s.img).length} / 5 Foto</span>
       </div>
+      <p class="mu" style="margin-bottom:10px">Pilih slot <b>Slide 1–5</b>, unggah atau tempel URL foto, lalu atur posisi fokus gambar agar objek utama terlihat jelas.</p>
+
+      <div class="slide-slots">
+        ${[0,1,2,3,4].map(idx=>{
+          const sl=slides[idx];
+          const has=sl&&sl.img;
+          return `<div class="slide-slot${edSlideIdx===idx?' on':''}" data-a="selPromoSlot" data-idx="${idx}" ${has?`style="background-image:url('${esc(sl.img)}');background-position:${sl.x??50}% ${sl.y??50}%"`:''}>
+            <span>#${idx+1}</span>
+            ${has?'':'+ Foto'}
+          </div>`;
+        }).join('')}
+      </div>
+
+      <div id="promoPosPrev" class="pos-preview" style="${curSlide.img?`background-image:url('${esc(curSlide.img)}');background-position:${curSlide.x??50}% ${curSlide.y??50}%`:''}">
+        ${curSlide.img?'':`<div style="height:100%;display:grid;place-items:center;color:var(--mu);font-size:12px;font-weight:600">Slot #${edSlideIdx+1} belum ada foto</div>`}
+      </div>
+
+      <label>Foto Slide #${edSlideIdx+1} (Otomatis dikompres)</label>
+      <div class="row" style="gap:10px;flex-wrap:nowrap;margin-bottom:8px">
+        <input type="file" accept="image/*" data-c="promoimg" style="font-size:13px;flex:1">
+        ${curSlide.img?`<button type="button" class="btn d s" data-a="rmPromoImg" style="min-height:36px;padding:4px 12px;flex:none">Hapus Slide</button>`:''}
+      </div>
+      <input id="s_pimg" placeholder="Atau tempel URL gambar https://…" value="${esc(curSlide.img&&curSlide.img.startsWith('data:')?'':(curSlide.img||''))}">
+
+      <label>Atur Posisi Fokus Foto Slide #${edSlideIdx+1}</label>
+      <div class="pos-presets">
+        ${presets.map(([lbl,px,py])=>`<button type="button" class="${Number(curSlide.x??50)===px&&Number(curSlide.y??50)===py?'on':''}" data-a="setPromoPos" data-x="${px}" data-y="${py}">${lbl}</button>`).join('')}
+      </div>
+      <div class="range-row">
+        <div class="range-box">
+          <div class="row" style="justify-content:space-between;font-size:11.5px;font-weight:700"><span>Geser Kiri/Kanan</span><span id="posXLbl">${curSlide.x??50}%</span></div>
+          <input type="range" id="s_px" min="0" max="100" value="${curSlide.x??50}" oninput="livePromoPos()">
+        </div>
+        <div class="range-box">
+          <div class="row" style="justify-content:space-between;font-size:11.5px;font-weight:700"><span>Geser Atas/Bawah</span><span id="posYLbl">${curSlide.y??50}%</span></div>
+          <input type="range" id="s_py" min="0" max="100" value="${curSlide.y??50}" oninput="livePromoPos()">
+        </div>
+      </div>
+
+      <div class="bar" style="margin-top:8px">
+        <div><label>Label Kecil (Badge)</label><input id="s_ppill" value="${esc(db.s.promoPill||'PANEN HARI INI')}"></div>
+        <div><label>Teks Tombol</label><input id="s_pbtn" value="${esc(db.s.promoBtn||'Pesan Sekarang')}"></div>
+      </div>
+      <label>Judul Utama Banner</label>
+      <input id="s_ptitle" value="${esc(db.s.promoTitle||'Fresh Durian Premium Harvest')}">
+      <label>Deskripsi Singkat Banner</label>
+      <textarea id="s_pdesc" rows="2">${esc(db.s.promoDesc||'Garansi manis & daging tebal. Pesan instan lewat WhatsApp.')}</textarea>
+      <button type="button" class="btn full" style="margin-top:14px" data-a="savePromo">Simpan Banner &amp; Posisi Slide</button>
+    </div>
+
+    <div class="card">
+      <h3 style="color:var(--pr);margin-bottom:4px">Identitas Toko &amp; Keamanan</h3>
       <label>Logo Toko</label>
       <div class="row" style="gap:12px;flex-wrap:nowrap;margin-bottom:6px">
         <div id="lgp" class="brand-logo" style="width:52px;height:52px">${lgHtml()}</div>
@@ -1376,24 +1545,29 @@ function vS(){
           <div class="tx-item" style="margin-bottom:8px;padding:10px">
             <div class="cms-thumb" style="width:48px;height:48px;border-radius:12px;${fp.img?`background-image:url('${esc(fp.img)}')`:''}">${fp.img?'':FB_ICO}</div>
             <div class="tx-mid">
-              <b>Kartu #${idx+1} · ${fmtDateID(fp.date)}</b>
-              <span class="mu">${esc(fp.cap)}</span>
+              <b style="font-size:13px">Kartu #${idx+1} · ${fmtDateID(fp.date)}</b>
+              <span class="mu" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(fp.cap||'')}</span>
             </div>
-            <button type="button" class="btn o s" style="padding:5px 12px;min-height:34px;font-size:12px" data-a="editFbPost" data-idx="${idx}">Edit</button>
+            <button type="button" class="btn o s" data-a="editFbPost" data-idx="${idx}" style="min-height:34px;padding:4px 12px">Edit</button>
           </div>`).join('')}
       </div>
     </div>
 
     <div class="card">
-      <h3 style="color:var(--pr);margin-bottom:6px">Backup &amp; Restore Database</h3>
-      <p class="mu" style="margin-bottom:10px">Salin JSON untuk cadangan data produk, pesanan, dan pembukuan.</p>
-      <textarea id="box" rows="4" placeholder="Data JSON akan muncul di sini…"></textarea>
+      <h3 style="color:var(--pr);margin-bottom:4px">Cadangkan &amp; Pulihkan Data</h3>
+      <p class="mu" style="margin-bottom:8px">Ekspor database ke format JSON untuk cadangan atau pulihkan dari salinan lama.</p>
+      <textarea id="box" rows="4" placeholder="Data JSON akan muncul di sini saat diekspor…"></textarea>
       <div class="row" style="margin-top:10px">
-        <button class="btn o s" data-a="exp">Ekspor JSON</button>
-        <button class="btn d s" data-a="imp">Impor JSON</button>
-        <button class="btn o s" data-a="resetAll">Reset Data Default</button>
+        <button type="button" class="btn o s" data-a="exp">Ekspor JSON</button>
+        <button type="button" class="btn d s" data-a="imp">Impor JSON</button>
+        <button type="button" class="btn d s" data-a="resetAll">Reset Data Default</button>
       </div>
     </div>`;
+}
+
+function toggleProd(id){
+  const p=db.p.find(x=>x.id===id);
+  if(p){p.on=!p.on;save();grid();toast(p.on?'Varietas ditampilkan di katalog':'Varietas disembunyikan')}
 }
 
 function mk(){
@@ -1401,29 +1575,74 @@ function mk(){
   if(!it.length||!n||!ad)return null;
   return{id:uid(),date:today(),name:n,addr:ad,items:it.map(i=>({id:i.p.id,name:i.p.name,price:i.p.price,qty:i.q})),total:total(),status:'Baru'};
 }
-const msgOf=o=>`Halo ${db.s.name}, saya mau pesan (No. ${o.id}):\n${o.items.map(i=>`- ${i.name} x ${i.qty} kg = ${rp(i.price*i.qty)}`).join('\n')}\nTotal estimasi: ${rp(o.total)}\nNama: ${o.name}\nAlamat: ${o.addr}`;
+const msgOf=o=>`Halo *${db.s.name}*, saya mau pesan durian (No. ${o.id}):\n${o.items.map(i=>`• ${i.name} × ${i.qty} kg = ${rp(i.price*i.qty)}`).join('\n')}\n\n*Total Estimasi:* ${rp(o.total)}\n*Nama:* ${o.name}\n*Alamat:* ${o.addr}`;
 function updWa(){const o=mk();$('#wal').href=o?wa(msgOf(o)):'#'}
-
-function toggleProd(id){
-  const p=db.p.find(x=>x.id===id);
-  if(p){p.on=!p.on;save();grid();toast(p.on?'Ditampilkan di katalog':'Disembunyikan dari katalog')}
-}
 
 /* ===== AKSI INTERAKTIF ===== */
 const A={
+  navHome(){selCat='';syncChips();grid();window.scrollTo({top:0,behavior:'smooth'})},
+  scrollCatalog(){$('#katalogSec').scrollIntoView({behavior:'smooth'})},
+  focusSearch(){$('#q').focus();$('#q').scrollIntoView({behavior:'smooth',block:'center'})},
   goAdmin(){viewMode='admin';route()},
   goHome(){viewMode='pub';route()},
-  navHome(){selCat='';$('#q').value='';syncChips();grid();window.scrollTo({top:0,behavior:'smooth'})},
-  focusSearch(){$('#q').focus();$('#q').scrollIntoView({behavior:'smooth',block:'center'})},
-  scrollCatalog(){$('#katalogSec').scrollIntoView({behavior:'smooth'})},
-  setCat(id){selCat=id||'';syncChips();grid()},
-  detail(id){openDetail(id)},
+  cat(id){selCat=id;syncChips();grid()},
+  detail(id,e){if(e.target.closest('[data-a="add"]'))return;openDetail(id)},
   closePd(){$('#pd').close()},
-  pickKg(kg){selKg=Number(kg)||1;renderDetail()},
+  pickKg(id){selKg=Number(id)||1;renderDetail()},
   addDetail(){
     if(!selProdId)return;
     cart[selProdId]=(cart[selProdId]||0)+selKg;
     $('#pd').close();grid();toast(`+${selKg} kg ditambahkan ke keranjang`);
+  },
+  selPromoSlot(id,e){
+    const idx=Number(e.target.closest('[data-a="selPromoSlot"]').dataset.idx);
+    edSlideIdx=idx;admin();
+  },
+  setPromoPos(id,e){
+    const btn=e.target.closest('[data-a="setPromoPos"]');
+    const x=Number(btn.dataset.x),y=Number(btn.dataset.y);
+    if($('#s_px'))$('#s_px').value=x;
+    if($('#s_py'))$('#s_py').value=y;
+    livePromoPos();
+    admin();
+  },
+  stepPromo(id,e){
+    const d=Number(e.target.closest('[data-a="stepPromo"]').dataset.d)||1;
+    const active=(db.s.promoSlides||[]).filter(s=>s&&s.img);
+    if(active.length>1){
+      promoIdx=(promoIdx+d+active.length)%active.length;
+      renderPromo();
+    }
+  },
+  pickPromoDot(id,e){
+    promoIdx=Number(e.target.closest('[data-a="pickPromoDot"]').dataset.idx)||0;
+    renderPromo();
+  },
+  rmPromoImg(){
+    if(!Array.isArray(db.s.promoSlides))db.s.promoSlides=[];
+    db.s.promoSlides.splice(edSlideIdx,1);
+    db.s.promoImg=db.s.promoSlides[0]?.img||'';
+    promoIdx=0;
+    save();renderPromo();admin();
+    toast(`Foto Slide #${edSlideIdx+1} dihapus`);
+  },
+  savePromo(){
+    db.s.promoPill=$('#s_ppill').value.trim()||'PANEN HARI INI';
+    db.s.promoTitle=$('#s_ptitle').value.trim()||'Fresh Durian Premium Harvest';
+    db.s.promoDesc=$('#s_pdesc').value.trim();
+    db.s.promoBtn=$('#s_pbtn').value.trim()||'Pesan Sekarang';
+    if(!Array.isArray(db.s.promoSlides))db.s.promoSlides=[];
+    const cur=db.s.promoSlides[edSlideIdx]||{img:'',x:50,y:50};
+    const u=$('#s_pimg').value.trim();
+    const x=Number($('#s_px')?.value??cur.x??50);
+    const y=Number($('#s_py')?.value??cur.y??50);
+    const finalImg=u||cur.img||'';
+    if(finalImg){
+      db.s.promoSlides[edSlideIdx]={img:finalImg,x,y};
+    }
+    db.s.promoSlides=db.s.promoSlides.filter(s=>s&&s.img).slice(0,5);
+    db.s.promoImg=db.s.promoSlides[0]?.img||'';
+    save();renderPromo();admin();toast('Banner & posisi slide disimpan');
   },
   add(id,e){
     if(e)e.stopPropagation();
@@ -1448,7 +1667,7 @@ const A={
   },
   login(){if($('#pin').value===db.s.pin){authed=true;admin()}else toast('PIN salah')},
   logout(){authed=false;admin()},
-  tab(id){tab=id;ed=edT=null;admin()},
+  tab(id){tab=id;ed=edT=edFb=null;admin()},
   cancel(){ed=edT=null;admin()},
   newP(){ed={name:'',cat:'Utuh',price:'',stock:'',desc:'',img:'',on:true};admin()},
   editP(id){ed={...db.p.find(p=>p.id===id)};admin()},
@@ -1460,10 +1679,11 @@ const A={
   saveP(){
     const n=$('#f_n').value.trim(),pr=+$('#f_p').value,s=+$('#f_s').value;
     if(!n||pr<=0||s<0||$('#f_s').value==='')return toast('Nama, harga (>0), dan stok wajib valid');
-    const u=$('#f_i').value.trim(),o={...ed,name:n,cat:ed.cat||'Utuh',price:pr,stock:s,desc:$('#f_d').value.trim(),on:$('#f_o').checked,img:u||ed.img};
+    const u=$('#f_i').value.trim(),o={...ed,name:n,cat:ed.cat||'Utuh',price:pr,stock:s,desc:$('#f_d').value.trim(),on:$('#f_o').checked,img:u||ed.img||''};
     if(o.id)db.p=db.p.map(p=>p.id===o.id?o:p);else{o.id=uid();db.p.push(o)}
     save();ed=null;admin();grid();toast('Varietas disimpan');
   },
+  rmEdImg(){if(ed){ed.img='';const p=$('#edImgPrev');if(p){p.style.backgroundImage='';p.innerHTML=DUR}toast('Foto produk dihapus')}},
   delP(id){askConfirm('Hapus Varietas','Hapus varietas durian ini dari katalog?',()=>{db.p=db.p.filter(p=>p.id!==id);save();admin();grid();toast('Varietas dihapus')})},
   delO(id){askConfirm('Hapus Pesanan','Hapus riwayat pesanan ini?',()=>{db.t=db.t.filter(t=>t.oid!==id);db.o=db.o.filter(o=>o.id!==id);save();admin();toast('Pesanan dihapus')})},
   newT(){edT={date:today(),type:'out',cat:'Beli stok',note:'',amt:''};admin()},
@@ -1554,6 +1774,7 @@ const A={
     const idx=Number(e.target.closest('[data-a="editFbPost"]').dataset.idx);
     edFb=idx;admin();
   },
+  rmFbImg(){if(edFb!==null&&db.fb[edFb]){db.fb[edFb].img='';const p=$('#fbImgPrev');if(p){p.style.backgroundImage='';p.innerHTML=FB_ICO}toast('Foto kartu dihapus')}},
   cancelFbPost(){edFb=null;admin()},
   saveFbPost(){
     if(edFb===null||!db.fb[edFb])return;
@@ -1597,13 +1818,30 @@ document.addEventListener('change',e=>{
   if(c==='logo'){const f=e.target.files[0];if(f)logoUp(f)}
   if(c==='img'){
     const f=e.target.files[0];if(!f)return;
-    if(f.size>300000){e.target.value='';return toast('Foto terlalu besar (maks 300 KB)')}
-    const r=new FileReader();r.onload=()=>{ed.img=r.result;toast('Foto siap, tekan Simpan')};r.readAsDataURL(f);
+    compressImg(f,640,0.8,dataUrl=>{
+      if(ed)ed.img=dataUrl;
+      const p=$('#edImgPrev');if(p){p.style.backgroundImage=`url('${dataUrl}')`;p.innerHTML=''}
+      toast('Foto siap, tekan Simpan Varietas');
+    });
   }
   if(c==='fbimg'){
     const f=e.target.files[0];if(!f)return;
-    if(f.size>300000){e.target.value='';return toast('Foto terlalu besar (maks 300 KB)')}
-    const r=new FileReader();r.onload=()=>{if(edFb!==null&&db.fb[edFb]){db.fb[edFb].img=r.result;toast('Foto post siap, tekan Simpan')}};r.readAsDataURL(f);
+    compressImg(f,720,0.8,dataUrl=>{
+      if(edFb!==null&&db.fb[edFb])db.fb[edFb].img=dataUrl;
+      const p=$('#fbImgPrev');if(p){p.style.backgroundImage=`url('${dataUrl}')`;p.innerHTML=''}
+      toast('Foto kartu siap, tekan Simpan Kartu');
+    });
+  }
+  if(c==='promoimg'){
+    const f=e.target.files[0];if(!f)return;
+    compressImg(f,1080,0.85,dataUrl=>{
+      if(!Array.isArray(db.s.promoSlides))db.s.promoSlides=[];
+      const prev=db.s.promoSlides[edSlideIdx]||{x:50,y:50};
+      db.s.promoSlides[edSlideIdx]={img:dataUrl,x:prev.x??50,y:prev.y??50};
+      db.s.promoImg=db.s.promoSlides.find(s=>s&&s.img)?.img||'';
+      save();renderPromo();admin();
+      toast(`Foto Slide #${edSlideIdx+1} ditambahkan`);
+    });
   }
 });
 $('#q').addEventListener('input',grid);
@@ -1622,28 +1860,89 @@ function tg(){
   $('#stg').textContent=db.s.tag||'Durian pilihan, dikemas segar, diantar ke rumah.';
   $('#waQuick').href=wa(`Halo ${db.s.name}, saya ingin bertanya seputar stok durian hari ini.`);
 }
+function livePromoPos(){
+  const x=Number($('#s_px')?.value??50),y=Number($('#s_py')?.value??50);
+  if($('#posXLbl'))$('#posXLbl').textContent=x+'%';
+  if($('#posYLbl'))$('#posYLbl').textContent=y+'%';
+  const prev=$('#promoPosPrev');
+  if(prev)prev.style.backgroundPosition=`${x}% ${y}%`;
+  if(!Array.isArray(db.s.promoSlides))db.s.promoSlides=[];
+  if(db.s.promoSlides[edSlideIdx]){
+    db.s.promoSlides[edSlideIdx].x=x;
+    db.s.promoSlides[edSlideIdx].y=y;
+    renderPromo();
+  }
+}
+function renderPromo(){
+  const card=$('#promoCard');
+  if($('#promoPill'))$('#promoPill').textContent=db.s.promoPill||'PANEN HARI INI';
+  if($('#promoTitle'))$('#promoTitle').textContent=db.s.promoTitle||'Fresh Durian Premium Harvest';
+  if($('#promoDesc'))$('#promoDesc').textContent=db.s.promoDesc||'Garansi manis & daging tebal. Pesan instan lewat WhatsApp.';
+  if($('#promoBtn'))$('#promoBtn').textContent=db.s.promoBtn||'Pesan Sekarang';
+  const active=(db.s.promoSlides||[]).filter(s=>s&&s.img).slice(0,5);
+  if(!active.length&&db.s.promoImg)active.push({img:db.s.promoImg,x:50,y:50});
+  if(promoIdx>=active.length)promoIdx=0;
+  if(card){
+    if(active.length){
+      const cur=active[promoIdx];
+      card.classList.add('has-bg');
+      card.style.backgroundImage=`url('${cur.img}')`;
+      card.style.backgroundPosition=`${cur.x??50}% ${cur.y??50}%`;
+    }else{
+      card.classList.remove('has-bg');
+      card.style.backgroundImage='';
+      card.style.backgroundPosition='center';
+    }
+  }
+  const dots=$('#promoDots'),nav=$('#promoNav');
+  if(dots){
+    dots.innerHTML=active.length>1?active.map((_,i)=>`<button type="button" class="promo-dot${i===promoIdx?' on':''}" data-a="pickPromoDot" data-idx="${i}" aria-label="Slide ${i+1}"></button>`).join(''):'';
+  }
+  if(nav)nav.classList.toggle('h',active.length<=1);
+  if($('#promoArt'))$('#promoArt').innerHTML=DUR;
+  clearInterval(promoTmr);
+  if(active.length>1){
+    promoTmr=setInterval(()=>{
+      if(viewMode==='pub'){
+        promoIdx=(promoIdx+1)%active.length;
+        renderPromo();
+      }
+    },4500);
+  }
+}
 function lg(){
   $('#lg').innerHTML=lgHtml();
-  $('#promoArt').innerHTML=DUR;
+  renderPromo();
 }
-function logoUp(f){
+
+function compressImg(file,maxW,qual,cb){
   const r=new FileReader();
-  r.onload=()=>{
+  r.onload=ev=>{
     const im=new Image();
     im.onload=()=>{
-      const s=Math.min(im.width,im.height),c=document.createElement('canvas');
-      c.width=c.height=192;c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,192,192);
-      db.s.logo=c.toDataURL('image/png');save();lg();
-      const p=$('#lgp');if(p)p.innerHTML=lgHtml();toast('Logo disimpan');
+      let w=im.width,h=im.height;
+      if(w>maxW){h=Math.round(h*maxW/w);w=maxW}
+      const cv=document.createElement('canvas');
+      cv.width=w;cv.height=h;
+      cv.getContext('2d').drawImage(im,0,0,w,h);
+      cb(cv.toDataURL('image/jpeg',qual));
     };
-    im.src=r.result;
+    im.src=ev.target.result;
   };
-  r.readAsDataURL(f);
+  r.readAsDataURL(file);
+}
+
+function logoUp(file){
+  compressImg(file,240,0.85,dataUrl=>{
+    db.s.logo=dataUrl;
+    save();lg();
+    const p=$('#lgp');if(p)p.innerHTML=lgHtml();
+    toast('Logo diperbarui');
+  });
 }
 
 $('#sn').textContent=db.s.name;
-tg();lg();document.title=db.s.name+' · Katalog Durian';
-grid();renderFb();route();initFirebase();
+tg();lg();grid();renderFb();route();initFirebase();
 </script>
 </body>
 </html>
