@@ -241,6 +241,32 @@ button,input,select,textarea{font:inherit;color:inherit}
   margin-top:auto;padding-top:6px;font-size:12px;font-weight:700;color:#1877F2;
   display:inline-flex;align-items:center;gap:4px;
 }
+.fb-embed-card{
+  flex:0 0 310px;background:var(--sf);border:1px solid var(--bd);border-radius:22px;
+  overflow:hidden;box-shadow:var(--sh);display:flex;flex-direction:column;
+}
+@media(min-width:720px){.fb-embed-card{flex:none}}
+.fb-embed-frame{
+  position:relative;width:100%;height:390px;background:#fff;overflow:hidden;
+  border-bottom:1px solid var(--bd);
+}
+.fb-embed-frame iframe{
+  position:absolute;top:0;left:0;width:500px;height:660px;border:0;
+  transform-origin:top left;transform:scale(0.62);
+}
+@media(min-width:720px){
+  .fb-embed-frame{height:360px}
+  .fb-embed-frame iframe{transform:scale(0.54)}
+}
+.fb-embed-foot{
+  padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  background:var(--sf);
+}
+.fb-detect{
+  display:flex;align-items:center;gap:8px;background:#E7F3FF;color:#1877F2;
+  padding:9px 12px;border-radius:14px;font-size:12px;font-weight:700;margin-top:8px;
+}
+.fb-detect.manual{background:var(--sf-alt);color:var(--pr)}
 
 /* Product Card (Oliva Style) */
 .pc{
@@ -579,6 +605,7 @@ input:not([type=checkbox]):not([type=file]):focus,textarea:focus{border-color:va
 .tx-ico.out{background:#FEE2E2;color:var(--rd)}
 .tx-mid{flex:1;min-width:0}
 .tx-mid b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-mid .mu{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx-amt{text-align:right;flex:none}
 .tx-amt b{display:block;font-size:14.5px}
 
@@ -825,11 +852,39 @@ const seed=()=>({
     {id:'T2',date:today(),type:'out',cat:'Beli stok',note:'Kulakan kebun',amt:145000}
   ],
   fb:[
-    {id:'FB1',date:today(),cap:'Panen perdana Musang King & Bawor super hari ini! Daging tebal kuning legit, siap kirim instan ke rumah Anda.',img:'',url:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr'},
-    {id:'FB2',date:today(),cap:'Restock Durian Kupas (Pulp) & Durian Beku Vakum kemasan higienis. Garansi manis, tidak manis siap tukar!',img:'',url:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr'},
-    {id:'FB3',date:today(),cap:'Terima kasih pelanggan setia sudah borong durian akhir pekan ini. Yuk cek katalog kami untuk stok terbaru!',img:'',url:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr'}
+    {
+      id:'FB1',
+      date:today(),
+      mode:'embed',
+      postUrl:'https://www.facebook.com/permalink.php?story_fbid=pfbid021uxucMy74FBZbwLoPsiX7P1c1b6QB5BNgbrVvkovjUyCAVR87dYMTbJcLugjwZ7Tl&id=61595994281775',
+      cap:'Juragan Durian Lombok · Kiriman Facebook Terbaru',
+      img:'',
+      url:'https://www.facebook.com/permalink.php?story_fbid=pfbid021uxucMy74FBZbwLoPsiX7P1c1b6QB5BNgbrVvkovjUyCAVR87dYMTbJcLugjwZ7Tl&id=61595994281775'
+    },
+    {id:'FB2',date:today(),mode:'manual',postUrl:'',cap:'Restock Durian Kupas (Pulp) & Durian Beku Vakum kemasan higienis. Garansi manis, tidak manis siap tukar!',img:'',url:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr'},
+    {id:'FB3',date:today(),mode:'manual',postUrl:'',cap:'Terima kasih pelanggan setia sudah borong durian akhir pekan ini. Yuk cek katalog kami untuk stok terbaru!',img:'',url:'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr'}
   ]
 });
+
+function parseFbInput(raw){
+  const s=String(raw||'').trim();
+  if(!s)return{type:'empty',postUrl:'',embedSrc:''};
+  let target=s;
+  const srcMatch=s.match(/src=["']([^"']+)["']/i);
+  if(srcMatch)target=srcMatch[1].replace(/&amp;/g,'&');
+  try{
+    const u=new URL(target);
+    if(u.pathname.includes('/plugins/post.php')&&u.searchParams.get('href')){
+      target=decodeURIComponent(u.searchParams.get('href'));
+    }
+  }catch(e){}
+  const isPost=/facebook\.com\/(permalink\.php|story\.php|photo\.php|watch|share\/p\/|share\/v\/|[^/?#]+\/(posts|photos|videos)\/)|fb\.watch\//i.test(target);
+  if(isPost||srcMatch){
+    const embedSrc=`https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(target)}&show_text=true&width=500`;
+    return{type:'embed',postUrl:target,embedSrc};
+  }
+  return{type:'link',postUrl:target,embedSrc:''};
+}
 
 let db=(()=>{
   const d=JSON.parse(localStorage.getItem(K)||'null')||seed();
@@ -1005,7 +1060,22 @@ function renderFb(){
   const pageUrl=db.s.fbPageUrl||'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr';
   if($('#fbPageLink'))$('#fbPageLink').href=pageUrl;
   const posts=(db.fb||[]).slice(0,3);
-  box.innerHTML=posts.map(fp=>`
+  box.innerHTML=posts.map(fp=>{
+    const parsed=parseFbInput(fp.postUrl||fp.url||'');
+    const useEmbed=(fp.mode==='embed'||(!fp.mode&&parsed.type==='embed'))&&parsed.embedSrc;
+    if(useEmbed){
+      return `
+      <div class="fb-embed-card">
+        <div class="fb-embed-frame">
+          <iframe src="${esc(parsed.embedSrc)}" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" loading="lazy"></iframe>
+        </div>
+        <div class="fb-embed-foot">
+          <span class="fb-pill" style="position:static">${FB_ICO} Facebook</span>
+          <a class="fb-link" style="margin:0;padding:0" href="${esc(parsed.postUrl||pageUrl)}" target="_blank" rel="noopener">Buka di Facebook ↗</a>
+        </div>
+      </div>`;
+    }
+    return `
     <a class="fb-card" href="${esc(fp.url||pageUrl)}" target="_blank" rel="noopener">
       <div class="fb-thumb" ${fp.img?`style="background-image:url('${esc(fp.img)}')"`:''}>
         ${fp.img?'':DUR}
@@ -1016,7 +1086,8 @@ function renderFb(){
         <p class="fb-cap">${esc(fp.cap)}</p>
         <span class="fb-link">Lihat di Facebook ↗</span>
       </div>
-    </a>`).join('');
+    </a>`;
+  }).join('');
 }
 
 function grid(){
@@ -1428,22 +1499,25 @@ function vS(){
   if(edSlideIdx>=5)edSlideIdx=0;
   const curSlide=slides[edSlideIdx]||{img:'',x:50,y:50};
   const presets=[['Atas',50,15],['Tengah',50,50],['Bawah',50,85],['Kiri',15,50],['Kanan',85,50]];
-  const fbForm=edFb!==null&&db.fb[edFb]?`
+  const curFb=edFb!==null&&db.fb[edFb]?db.fb[edFb]:null;
+  const curFbParsed=curFb?parseFbInput(curFb.postUrl||curFb.url||''):{type:'empty',postUrl:'',embedSrc:''};
+  const curFbIsEmbed=curFb&&(curFb.mode==='embed'||(!curFb.mode&&curFbParsed.type==='embed'))&&curFbParsed.embedSrc;
+  const fbForm=curFb?`
     <div style="background:var(--bg);padding:14px;border-radius:18px;margin:12px 0;border:1.5px solid var(--pr)">
-      <b style="color:var(--pr);display:block;margin-bottom:6px">Edit Kartu Facebook #${edFb+1}</b>
-      <label>Caption Postingan</label>
-      <textarea id="fb_cap" rows="3" placeholder="Tulis atau salin caption dari Facebook…">${esc(db.fb[edFb].cap||'')}</textarea>
-      <label>Link Postingan / Halaman Facebook</label>
-      <input id="fb_url" placeholder="https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr" value="${esc(db.fb[edFb].url||pageUrl)}">
-      <label>Foto Thumbnail (Otomatis dikompres, atau tempel URL gambar)</label>
-      <div class="row" style="gap:10px;flex-wrap:nowrap;margin-bottom:8px">
-        <div id="fbImgPrev" class="cms-thumb" style="width:52px;height:52px;border-radius:14px;${db.fb[edFb].img?`background-image:url('${esc(db.fb[edFb].img)}')`:''}">${db.fb[edFb].img?'':FB_ICO}</div>
-        <div style="flex:1;min-width:0">
-          <input type="file" accept="image/*" data-c="fbimg" style="font-size:13px">
-          ${db.fb[edFb].img?`<button type="button" class="btn d s" data-a="rmFbImg" style="margin-top:6px;min-height:30px;padding:3px 10px;font-size:11.5px">Hapus Foto</button>`:''}
+      <div class="row" style="justify-content:space-between;margin-bottom:6px">
+        <b style="color:var(--pr)">Edit Embed Facebook #${edFb+1}</b>
+        <span class="tag" style="background:#E7F3FF;color:#1877F2">${curFbIsEmbed?'Siap Tampil':'Menunggu Link'}</span>
+      </div>
+      <label>Tempel Kode &lt;iframe&gt; atau Link Postingan Facebook</label>
+      <textarea id="fb_raw" rows="3" placeholder="Tempel seluruh kode <iframe src=&quot;https://www.facebook.com/plugins/post.php?...&quot;></iframe> atau link postingan Facebook di sini…" oninput="liveFbEmbedPreview()">${esc(curFb.postUrl||curFb.url||'')}</textarea>
+      <div id="fbDetectBox" class="fb-detect${curFbIsEmbed?'':' manual'}">
+        ${curFbIsEmbed?'✓ Kode Embed Facebook Terdeteksi · Postingan asli Facebook akan tampil otomatis':'ℹ Tempel kode <iframe> atau link postingan Facebook pada kolom di atas'}
+      </div>
+      <div id="fbLiveEmbedWrap" style="${curFbIsEmbed?'margin-top:10px':'display:none'}">
+        <div class="fb-embed-frame" style="height:260px;border-radius:14px;border:1px solid var(--bd)">
+          <iframe id="fbLiveIframe" src="${curFbIsEmbed?esc(curFbParsed.embedSrc):'about:blank'}" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" style="transform:scale(0.54)"></iframe>
         </div>
       </div>
-      <input id="fb_img" placeholder="Atau tempel URL gambar https://…" value="${esc(db.fb[edFb].img&&db.fb[edFb].img.startsWith('data:')?'':(db.fb[edFb].img||''))}">
       <div class="row" style="margin-top:12px">
         <button type="button" class="btn s" data-a="saveFbPost">Simpan Kartu #${edFb+1}</button>
         <button type="button" class="btn o s" data-a="cancelFbPost">Batal</button>
@@ -1529,10 +1603,10 @@ function vS(){
 
     <div class="card">
       <div class="row" style="justify-content:space-between;margin-bottom:4px">
-        <h3 style="color:var(--pr)">3 Kartu Thumbnail Facebook</h3>
+        <h3 style="color:var(--pr)">3 Kartu Embed Facebook</h3>
         <a href="${esc(pageUrl)}" target="_blank" rel="noopener" class="tag" style="background:#E7F3FF;color:#1877F2">Buka Page ↗</a>
       </div>
-      <p class="mu" style="margin-bottom:10px">Tampilkan 3 kartu foto &amp; caption yang langsung mengarah ke halaman Facebook Anda saat diklik pengunjung.</p>
+      <p class="mu" style="margin-bottom:10px">Tampilkan 3 postingan Facebook terbaru secara otomatis di halaman katalog publik.</p>
       <label>Link Utama Halaman Facebook</label>
       <div class="row" style="flex-wrap:nowrap;gap:8px">
         <input id="s_fburl" value="${esc(pageUrl)}" style="flex:1">
@@ -1540,16 +1614,23 @@ function vS(){
       </div>
       ${fbForm}
       <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--bd)">
-        <span class="mu" style="display:block;margin-bottom:8px">Ketuk <b>Edit</b> untuk mengganti foto thumbnail &amp; caption tiap kartu:</span>
-        ${(db.fb||[]).slice(0,3).map((fp,idx)=>`
-          <div class="tx-item" style="margin-bottom:8px;padding:10px">
-            <div class="cms-thumb" style="width:48px;height:48px;border-radius:12px;${fp.img?`background-image:url('${esc(fp.img)}')`:''}">${fp.img?'':FB_ICO}</div>
-            <div class="tx-mid">
-              <b style="font-size:13px">Kartu #${idx+1} · ${fmtDateID(fp.date)}</b>
-              <span class="mu" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(fp.cap||'')}</span>
+        <span class="mu" style="display:block;margin-bottom:8px">Ketuk <b>Edit</b> untuk menempel kode <code>&lt;iframe&gt;</code> atau link postingan Facebook:</span>
+        ${(db.fb||[]).slice(0,3).map((fp,idx)=>{
+          const pInfo=parseFbInput(fp.postUrl||fp.url||'');
+          const isEmb=(fp.mode==='embed'||(!fp.mode&&pInfo.type==='embed'))&&pInfo.embedSrc;
+          return `
+          <div class="tx-item" style="margin-bottom:8px;padding:10px 12px;overflow:hidden">
+            <div class="cms-thumb" style="width:44px;height:44px;border-radius:12px;flex:none">${FB_ICO}</div>
+            <div class="tx-mid" style="flex:1;min-width:0;overflow:hidden">
+              <div class="row" style="gap:6px;margin-bottom:2px">
+                <b style="font-size:13px">Kartu #${idx+1}</b>
+                <span class="tag" style="padding:2px 8px;font-size:10px;${isEmb?'background:#E7F3FF;color:#1877F2':''}">${isEmb?'Embed Facebook':'Tautan'}</span>
+              </div>
+              <span class="mu" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(pInfo.postUrl||fp.url||pageUrl)}</span>
             </div>
-            <button type="button" class="btn o s" data-a="editFbPost" data-idx="${idx}" style="min-height:34px;padding:4px 12px">Edit</button>
-          </div>`).join('')}
+            <button type="button" class="btn o s" data-a="editFbPost" data-idx="${idx}" style="min-height:34px;padding:4px 12px;flex:none">Edit</button>
+          </div>`;
+        }).join('')}
       </div>
     </div>
 
@@ -1774,21 +1855,23 @@ const A={
     const idx=Number(e.target.closest('[data-a="editFbPost"]').dataset.idx);
     edFb=idx;admin();
   },
-  rmFbImg(){if(edFb!==null&&db.fb[edFb]){db.fb[edFb].img='';const p=$('#fbImgPrev');if(p){p.style.backgroundImage='';p.innerHTML=FB_ICO}toast('Foto kartu dihapus')}},
   cancelFbPost(){edFb=null;admin()},
   saveFbPost(){
     if(edFb===null||!db.fb[edFb])return;
-    const cap=$('#fb_cap').value.trim();
-    const url=$('#fb_url').value.trim()||db.s.fbPageUrl||'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr';
-    const imgIn=$('#fb_img').value.trim();
+    const raw=($('#fb_raw')?.value||'').trim();
+    const parsed=parseFbInput(raw);
+    const fallbackUrl=db.s.fbPageUrl||'https://www.facebook.com/share/1JmHRHztPD/?mibextid=wwXIfr';
+    const isEmbed=parsed.type==='embed'&&Boolean(parsed.embedSrc);
     db.fb[edFb]={
       ...db.fb[edFb],
       date:today(),
-      cap:cap||'Update terbaru dari Halaman Facebook kami.',
-      url,
-      img:imgIn||db.fb[edFb].img||''
+      mode:isEmbed?'embed':'manual',
+      postUrl:parsed.postUrl||'',
+      cap:isEmbed?'Postingan Facebook Terbaru':'Update terbaru dari Halaman Facebook kami.',
+      url:parsed.postUrl||fallbackUrl,
+      img:''
     };
-    save();renderFb();edFb=null;admin();toast('Kartu Facebook diperbarui');
+    save();renderFb();edFb=null;admin();toast(isEmbed?'Embed Facebook berhasil disimpan':'Link postingan diperbarui');
   }
 };
 
@@ -1825,12 +1908,7 @@ document.addEventListener('change',e=>{
     });
   }
   if(c==='fbimg'){
-    const f=e.target.files[0];if(!f)return;
-    compressImg(f,720,0.8,dataUrl=>{
-      if(edFb!==null&&db.fb[edFb])db.fb[edFb].img=dataUrl;
-      const p=$('#fbImgPrev');if(p){p.style.backgroundImage=`url('${dataUrl}')`;p.innerHTML=''}
-      toast('Foto kartu siap, tekan Simpan Kartu');
-    });
+    return;
   }
   if(c==='promoimg'){
     const f=e.target.files[0];if(!f)return;
@@ -1859,6 +1937,19 @@ addEventListener('hashchange',()=>{if(location.hash==='#admin')viewMode='admin';
 function tg(){
   $('#stg').textContent=db.s.tag||'Durian pilihan, dikemas segar, diantar ke rumah.';
   $('#waQuick').href=wa(`Halo ${db.s.name}, saya ingin bertanya seputar stok durian hari ini.`);
+}
+function liveFbEmbedPreview(){
+  const raw=$('#fb_raw')?.value||'';
+  const parsed=parseFbInput(raw);
+  const box=$('#fbDetectBox'),wrap=$('#fbLiveEmbedWrap'),ifr=$('#fbLiveIframe');
+  if(parsed.type==='embed'&&parsed.embedSrc){
+    if(box){box.className='fb-detect';box.textContent='✓ Kode Embed Facebook Terdeteksi · Postingan asli Facebook akan tampil otomatis'}
+    if(wrap)wrap.style.display='block';
+    if(ifr&&ifr.src!==parsed.embedSrc)ifr.src=parsed.embedSrc;
+  }else{
+    if(box){box.className='fb-detect manual';box.textContent='ℹ Tempel kode <iframe> atau link postingan Facebook pada kolom di atas'}
+    if(wrap)wrap.style.display='none';
+  }
 }
 function livePromoPos(){
   const x=Number($('#s_px')?.value??50),y=Number($('#s_py')?.value??50);
